@@ -1,10 +1,12 @@
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
+import BulletList from '@tiptap/extension-bullet-list';
 import CharacterCount from '@tiptap/extension-character-count';
 import Document from '@tiptap/extension-document';
 import Heading from '@tiptap/extension-heading';
 import History from '@tiptap/extension-history';
 import Italic from '@tiptap/extension-italic';
+import ListItem from '@tiptap/extension-list-item';
 import Paragraph from '@tiptap/extension-paragraph';
 import Strike from '@tiptap/extension-strike';
 import Text from '@tiptap/extension-text';
@@ -38,11 +40,13 @@ function App() {
     extensions: [
       Blockquote,
       Bold,
+      BulletList,
       CharacterCount.configure(),
       Document,
       Heading.configure({ levels: [1, 2, 3] }),
       History,
       Italic,
+      ListItem,
       Paragraph,
       Strike,
       Text,
@@ -50,7 +54,7 @@ function App() {
     autofocus: true,
     editorProps: {
       attributes: {
-        class: 'h-full w-full focus:outline-none prose max-w-none',
+        class: 'h-full w-full focus:outline-none prose prose-sm max-w-none',
       },
     },
     onUpdate: ({ editor }) => {
@@ -64,8 +68,11 @@ function App() {
 
   const updateCursorPosition = (editor: Editor | null): void => {
     if (!editor) return;
+
     const { from } = editor.state.selection;
+
     const position = editor.view.state.doc.resolve(from);
+
     setCursorPosition({
       line: (position as any).path[1] + 1,
       column: position.parentOffset + 1,
@@ -74,13 +81,17 @@ function App() {
 
   const updateCharacterCount = (editor: Editor | null): void => {
     if (!editor) return;
+
     const characters = editor.storage.characterCount.characters();
+
     const words = editor.storage.characterCount.words();
+
     setCharacterCount({ characters, words });
   };
 
   useEffect(() => {
     if (!editorContainerRef.current || !lineNumbersRef.current) return;
+
     const editorContainer = editorContainerRef.current;
     const lineNumbersContainer = lineNumbersRef.current;
 
@@ -117,6 +128,7 @@ function App() {
           <div className='px-2 font-mono text-sm text-gray-500'>
             {editor.getJSON().content?.map((_, nodeIndex) => {
               const lineNumber = nodeIndex + 1;
+
               return (
                 <div key={`line-${lineNumber}`} className='h-6'>
                   {lineNumber}
@@ -125,6 +137,7 @@ function App() {
             })}
           </div>
         </div>
+
         {/* Editor */}
         <div ref={editorContainerRef} className='h-full flex-1 overflow-auto'>
           <EditorContent
