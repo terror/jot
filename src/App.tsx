@@ -9,6 +9,7 @@ import { Editor, EditorContent, useEditor } from '@tiptap/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { formatDate } from './lib/utils';
+import History from '@tiptap/extension-history';
 
 type Position = {
   column: number;
@@ -31,6 +32,7 @@ function App() {
       Bold,
       Document,
       Heading.configure({ levels: [1, 2, 3] }),
+      History,
       Italic,
       Paragraph,
       Strike,
