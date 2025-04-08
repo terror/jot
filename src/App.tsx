@@ -1,6 +1,8 @@
+import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
 import Document from '@tiptap/extension-document';
 import Heading from '@tiptap/extension-heading';
+import History from '@tiptap/extension-history';
 import Italic from '@tiptap/extension-italic';
 import Paragraph from '@tiptap/extension-paragraph';
 import Strike from '@tiptap/extension-strike';
@@ -9,7 +11,6 @@ import { Editor, EditorContent, useEditor } from '@tiptap/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { formatDate } from './lib/utils';
-import History from '@tiptap/extension-history';
 
 type Position = {
   column: number;
@@ -29,6 +30,7 @@ function App() {
 
   const editor = useEditor({
     extensions: [
+      Blockquote,
       Bold,
       Document,
       Heading.configure({ levels: [1, 2, 3] }),
