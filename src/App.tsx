@@ -1,4 +1,5 @@
 import Document from '@tiptap/extension-document';
+import Heading from '@tiptap/extension-heading';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
@@ -17,7 +18,13 @@ function App() {
   });
 
   const editor = useEditor({
-    extensions: [Document, Paragraph, Text, horizontalRuleExtension],
+    extensions: [
+      Document,
+      Heading.configure({ levels: [1, 2, 3] }),
+      Paragraph,
+      Text,
+      horizontalRuleExtension,
+    ],
     autofocus: true,
     editorProps: {
       attributes: {

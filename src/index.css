@@ -5,6 +5,35 @@
     padding: 0 0 0 0.1rem;
   }
 
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 1.1;
+    padding: 0 0 0 0.1rem;
+    text-wrap: pretty;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-size: 1rem;
+  }
+
   hr {
     border: none;
     border-top: 1px solid #e5e7eb;
