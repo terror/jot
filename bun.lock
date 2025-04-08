@@ -8,6 +8,7 @@
         "@tauri-apps/api": "^1",
         "@tiptap/extension-blockquote": "^2.11.7",
         "@tiptap/extension-bold": "^2.11.7",
+        "@tiptap/extension-character-count": "^2.11.7",
         "@tiptap/extension-document": "^2.11.7",
         "@tiptap/extension-heading": "^2.11.7",
         "@tiptap/extension-history": "^2.11.7",
@@ -234,6 +235,8 @@
     "@tiptap/extension-bold": ["@tiptap/extension-bold@2.11.7", "", { "peerDependencies": { "@tiptap/core": "^2.7.0" } }, "sha512-VTR3JlldBixXbjpLTFme/Bxf1xeUgZZY3LTlt5JDlCW3CxO7k05CIa+kEZ8LXpog5annytZDUVtWqxrNjmsuHQ=="],
 
     "@tiptap/extension-bubble-menu": ["@tiptap/extension-bubble-menu@2.11.7", "", { "dependencies": { "tippy.js": "^6.3.7" }, "peerDependencies": { "@tiptap/core": "^2.7.0", "@tiptap/pm": "^2.7.0" } }, "sha512-0vYqSUSSap3kk3/VT4tFE1/6StX70I3/NKQ4J68ZSFgkgyB3ZVlYv7/dY3AkEukjsEp3yN7m8Gw8ei2eEwyzwg=="],
+
+    "@tiptap/extension-character-count": ["@tiptap/extension-character-count@2.11.7", "", { "peerDependencies": { "@tiptap/core": "^2.7.0", "@tiptap/pm": "^2.7.0" } }, "sha512-gcVbKou+uxzg8N0BBKceLwtpWvN8g2TIjTuCdyAcAPukX63DqVWOkofFHn1RqZbstJmtF4pTGZs9OH/GJrp27Q=="],
 
     "@tiptap/extension-document": ["@tiptap/extension-document@2.11.7", "", { "peerDependencies": { "@tiptap/core": "^2.7.0" } }, "sha512-95ouJXPjdAm9+VBRgFo4lhDoMcHovyl/awORDI8gyEn0Rdglt+ZRZYoySFzbVzer9h0cre+QdIwr9AIzFFbfdA=="],
 

@@ -1,5 +1,6 @@
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
+import CharacterCount from '@tiptap/extension-character-count';
 import Document from '@tiptap/extension-document';
 import Heading from '@tiptap/extension-heading';
 import History from '@tiptap/extension-history';
@@ -22,9 +23,14 @@ function App() {
     line: 1,
     column: 1,
   });
-
   const [currentDate] = useState<string>(formatDate(new Date()));
-
+  const [characterCount, setCharacterCount] = useState<{
+    characters: number;
+    words: number;
+  }>({
+    characters: 0,
+    words: 0,
+  });
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
 
@@ -32,6 +38,7 @@ function App() {
     extensions: [
       Blockquote,
       Bold,
+      CharacterCount.configure(),
       Document,
       Heading.configure({ levels: [1, 2, 3] }),
       History,
@@ -48,6 +55,7 @@ function App() {
     },
     onUpdate: ({ editor }) => {
       updateCursorPosition(editor);
+      updateCharacterCount(editor);
     },
     onSelectionUpdate: ({ editor }) => {
       updateCursorPosition(editor);
@@ -56,20 +64,23 @@ function App() {
 
   const updateCursorPosition = (editor: Editor | null): void => {
     if (!editor) return;
-
     const { from } = editor.state.selection;
-
     const position = editor.view.state.doc.resolve(from);
-
     setCursorPosition({
       line: (position as any).path[1] + 1,
       column: position.parentOffset + 1,
     });
   };
 
+  const updateCharacterCount = (editor: Editor | null): void => {
+    if (!editor) return;
+    const characters = editor.storage.characterCount.characters();
+    const words = editor.storage.characterCount.words();
+    setCharacterCount({ characters, words });
+  };
+
   useEffect(() => {
     if (!editorContainerRef.current || !lineNumbersRef.current) return;
-
     const editorContainer = editorContainerRef.current;
     const lineNumbersContainer = lineNumbersRef.current;
 
@@ -83,6 +94,12 @@ function App() {
       editorContainer.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    if (editor) {
+      updateCharacterCount(editor);
+    }
+  }, [editor]);
 
   if (!editor) {
     return null;
@@ -100,7 +117,6 @@ function App() {
           <div className='px-2 font-mono text-sm text-gray-500'>
             {editor.getJSON().content?.map((_, nodeIndex) => {
               const lineNumber = nodeIndex + 1;
-
               return (
                 <div key={`line-${lineNumber}`} className='h-6'>
                   {lineNumber}
@@ -109,7 +125,6 @@ function App() {
             })}
           </div>
         </div>
-
         {/* Editor */}
         <div ref={editorContainerRef} className='h-full flex-1 overflow-auto'>
           <EditorContent
@@ -125,8 +140,12 @@ function App() {
       {/* Status */}
       <div className='border-t border-gray-300 bg-gray-200 text-xs text-gray-600'>
         <div className='flex justify-between p-2'>
-          <div>
-            Line {cursorPosition.line} Column {cursorPosition.column}
+          <div className='flex gap-2'>
+            <span>
+              {cursorPosition.line}:{cursorPosition.column}
+            </span>
+            <span>C {characterCount.characters}</span>
+            <span>W {characterCount.words}</span>
           </div>
           <div>{currentDate}</div>
         </div>
