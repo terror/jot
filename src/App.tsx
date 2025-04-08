@@ -4,6 +4,7 @@ import Heading from '@tiptap/extension-heading';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Italic from '@tiptap/extension-italic';
 import Paragraph from '@tiptap/extension-paragraph';
+import Strike from '@tiptap/extension-strike';
 import Text from '@tiptap/extension-text';
 import { EditorContent, useEditor } from '@tiptap/react';
 
@@ -27,6 +28,7 @@ function App() {
       Heading.configure({ levels: [1, 2, 3] }),
       Italic,
       Paragraph,
+      Strike,
       Text,
     ],
     autofocus: true,
