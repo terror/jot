@@ -1,19 +1,23 @@
-import { useState } from "react";
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 
 function App() {
-  const [value, setValue] = useState<string>('');
+  const editor = useEditor({
+    extensions: [StarterKit],
+    editorProps: {
+      attributes: {
+        class: 'h-full w-full focus:outline-none p-4 prose max-w-none caret-black',
+      },
+    },
+  });
 
   return (
-    <div className='flex h-screen w-screen items-center justify-center bg-gray-100'>
-      <textarea
-        autoComplete='off'
-        autoCorrect='off'
-        className='h-full w-full resize-none p-4 focus:outline-none'
-        onChange={(e) => setValue(e.target.value)}
-        spellCheck={false}
-        value={value}
-      />
-    </div>
+    <EditorContent
+      autoComplete='off'
+      autoCorrect='off'
+      editor={editor}
+      spellCheck={false}
+    />
   );
 }
 
