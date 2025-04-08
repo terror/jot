@@ -1,1 +1,18 @@
 @import 'tailwindcss';
+
+.tiptap {
+  p {
+    padding: 0 0 0 0.1rem;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    cursor: pointer;
+    margin: 0.1rem 0 0.1rem 0;
+
+    &.ProseMirror-selectednode {
+      border-top: 1px solid #d6d6d6;
+    }
+  }
+}

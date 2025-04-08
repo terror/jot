@@ -1,23 +1,43 @@
+import Document from '@tiptap/extension-document';
+import HorizontalRule from '@tiptap/extension-horizontal-rule';
+import Paragraph from '@tiptap/extension-paragraph';
+import Text from '@tiptap/extension-text';
 import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 
 function App() {
+  const horizontalRuleExtension = HorizontalRule.extend({
+    addKeyboardShortcuts() {
+      return {
+        'Mod-Enter': () => {
+          this.editor.commands.setHorizontalRule();
+          return true;
+        },
+      };
+    },
+  });
+
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [Document, Paragraph, Text, horizontalRuleExtension],
+    autofocus: true,
     editorProps: {
       attributes: {
-        class: 'h-full w-full focus:outline-none p-4 prose max-w-none caret-black',
+        class: 'h-full w-full focus:outline-none prose max-w-none',
       },
     },
   });
 
   return (
-    <EditorContent
-      autoComplete='off'
-      autoCorrect='off'
-      editor={editor}
-      spellCheck={false}
-    />
+    <div className='flex h-screen w-screen items-center justify-center bg-gray-100'>
+      <div className='h-full w-full overflow-auto bg-white caret-black'>
+        <EditorContent
+          autoCorrect='off'
+          autoComplete='off'
+          spellCheck={false}
+          editor={editor}
+          className='h-full'
+        />
+      </div>
+    </div>
   );
 }
 
