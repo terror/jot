@@ -48,10 +48,16 @@
     padding-left: 0.25rem;
   }
 
+  ul {
+    padding-left: 1.5rem;
+  }
+
+  ol {
+    padding-left: 1.8rem;
+  }
+
   ul,
   ol {
-    padding-left: 1.5rem;
-
     li,
     p {
       margin: 0;

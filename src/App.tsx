@@ -7,6 +7,7 @@ import Heading from '@tiptap/extension-heading';
 import History from '@tiptap/extension-history';
 import Italic from '@tiptap/extension-italic';
 import ListItem from '@tiptap/extension-list-item';
+import OrderedList from '@tiptap/extension-ordered-list';
 import Paragraph from '@tiptap/extension-paragraph';
 import Strike from '@tiptap/extension-strike';
 import Text from '@tiptap/extension-text';
@@ -25,7 +26,9 @@ function App() {
     line: 1,
     column: 1,
   });
+
   const [currentDate] = useState<string>(formatDate(new Date()));
+
   const [characterCount, setCharacterCount] = useState<{
     characters: number;
     words: number;
@@ -33,7 +36,9 @@ function App() {
     characters: 0,
     words: 0,
   });
+
   const editorContainerRef = useRef<HTMLDivElement>(null);
+
   const lineNumbersRef = useRef<HTMLDivElement>(null);
 
   const editor = useEditor({
@@ -47,6 +52,7 @@ function App() {
       History,
       Italic,
       ListItem,
+      OrderedList,
       Paragraph,
       Strike,
       Text,
