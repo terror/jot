@@ -1,52 +1,34 @@
 import Bold from '@tiptap/extension-bold';
 import Document from '@tiptap/extension-document';
 import Heading from '@tiptap/extension-heading';
-import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Italic from '@tiptap/extension-italic';
 import Paragraph from '@tiptap/extension-paragraph';
 import Strike from '@tiptap/extension-strike';
 import Text from '@tiptap/extension-text';
 import { Editor, EditorContent, useEditor } from '@tiptap/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const CustomHorizontalRule = HorizontalRule.extend({
-  addKeyboardShortcuts() {
-    return {
-      'Mod-Enter': () => {
-        this.editor.commands.setHorizontalRule();
-        return true;
-      },
-    };
-  },
-});
+import { formatDate } from './lib/utils';
 
-function formatDate(date: Date): string {
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  };
-
-  return date.toLocaleDateString('en-US', options);
-}
-
-interface CursorPosition {
-  line: number;
+type Position = {
   column: number;
-}
+  line: number;
+};
 
 function App() {
-  const [cursorPosition, setCursorPosition] = useState<CursorPosition>({
+  const [cursorPosition, setCursorPosition] = useState<Position>({
     line: 1,
     column: 1,
   });
 
   const [currentDate] = useState<string>(formatDate(new Date()));
 
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+  const lineNumbersRef = useRef<HTMLDivElement>(null);
+
   const editor = useEditor({
     extensions: [
       Bold,
-      CustomHorizontalRule,
       Document,
       Heading.configure({ levels: [1, 2, 3] }),
       Italic,
@@ -81,25 +63,66 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    if (!editorContainerRef.current || !lineNumbersRef.current) return;
+
+    const editorContainer = editorContainerRef.current;
+    const lineNumbersContainer = lineNumbersRef.current;
+
+    const handleScroll = () => {
+      lineNumbersContainer.scrollTop = editorContainer.scrollTop;
+    };
+
+    editorContainer.addEventListener('scroll', handleScroll);
+
+    return () => {
+      editorContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   if (!editor) {
     return null;
   }
 
   return (
     <div className='flex h-screen w-screen flex-col bg-gray-100'>
-      <div className='flex-grow overflow-auto bg-white caret-black'>
-        <EditorContent
-          autoCorrect='off'
-          autoComplete='off'
-          spellCheck={false}
-          editor={editor}
-          className='h-full'
-        />
+      <div className='flex flex-grow overflow-hidden bg-white caret-black'>
+        {/* Line Numbers */}
+        <div
+          ref={lineNumbersRef}
+          className='pointer-events-none overflow-hidden border-r border-gray-200 bg-gray-100 text-right select-none'
+          style={{ paddingTop: '0.1rem' }}
+        >
+          <div className='px-2 font-mono text-sm text-gray-500'>
+            {editor.getJSON().content?.map((_, nodeIndex) => {
+              const lineNumber = nodeIndex + 1;
+
+              return (
+                <div key={`line-${lineNumber}`} className='h-6'>
+                  {lineNumber}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Editor */}
+        <div ref={editorContainerRef} className='h-full flex-1 overflow-auto'>
+          <EditorContent
+            autoCorrect='off'
+            autoComplete='off'
+            spellCheck={false}
+            editor={editor}
+            className='h-full'
+          />
+        </div>
       </div>
-      <div className='border-t border-gray-300 bg-gray-200 p-2 text-xs text-gray-600'>
-        <div className='flex justify-between'>
+
+      {/* Status */}
+      <div className='border-t border-gray-300 bg-gray-200 text-xs text-gray-600'>
+        <div className='flex justify-between p-2'>
           <div>
-            Line {cursorPosition.line} Column {cursorPosition.column}
+            Line {cursorPosition.line}, Column {cursorPosition.column}
           </div>
           <div>{currentDate}</div>
         </div>
