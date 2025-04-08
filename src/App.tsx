@@ -1,3 +1,4 @@
+import Bold from '@tiptap/extension-bold';
 import Document from '@tiptap/extension-document';
 import Heading from '@tiptap/extension-heading';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
@@ -19,6 +20,7 @@ const CustomHorizontalRule = HorizontalRule.extend({
 function App() {
   const editor = useEditor({
     extensions: [
+      Bold,
       CustomHorizontalRule,
       Document,
       Heading.configure({ levels: [1, 2, 3] }),
