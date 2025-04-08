@@ -5,25 +5,25 @@ import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
 import { EditorContent, useEditor } from '@tiptap/react';
 
-function App() {
-  const horizontalRuleExtension = HorizontalRule.extend({
-    addKeyboardShortcuts() {
-      return {
-        'Mod-Enter': () => {
-          this.editor.commands.setHorizontalRule();
-          return true;
-        },
-      };
-    },
-  });
+const CustomHorizontalRule = HorizontalRule.extend({
+  addKeyboardShortcuts() {
+    return {
+      'Mod-Enter': () => {
+        this.editor.commands.setHorizontalRule();
+        return true;
+      },
+    };
+  },
+});
 
+function App() {
   const editor = useEditor({
     extensions: [
+      CustomHorizontalRule,
       Document,
       Heading.configure({ levels: [1, 2, 3] }),
       Paragraph,
       Text,
-      horizontalRuleExtension,
     ],
     autofocus: true,
     editorProps: {
@@ -32,6 +32,10 @@ function App() {
       },
     },
   });
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <div className='flex h-screen w-screen items-center justify-center bg-gray-100'>
