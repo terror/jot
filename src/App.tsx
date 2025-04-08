@@ -122,7 +122,7 @@ function App() {
       <div className='border-t border-gray-300 bg-gray-200 text-xs text-gray-600'>
         <div className='flex justify-between p-2'>
           <div>
-            Line {cursorPosition.line}, Column {cursorPosition.column}
+            Line {cursorPosition.line} Column {cursorPosition.column}
           </div>
           <div>{currentDate}</div>
         </div>
