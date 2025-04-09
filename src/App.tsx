@@ -60,9 +60,26 @@ const App = () => {
     words: 0,
   });
 
+  const [fonts] = useState<string[]>([
+    'Arial',
+    'Calibri',
+    'Cambria',
+    'Comic Sans MS',
+    'Courier New',
+    'Georgia',
+    'Helvetica',
+    'Inter',
+    'JetBrains Mono',
+    'Menlo',
+    'Monaco',
+    'Roboto',
+    'Segoe UI',
+    'Times New Roman',
+    'Verdana',
+  ]);
+
   const [directory, setDirectory] = useState('');
   const [fontSize, setFontSize] = useState('16');
-  const [fonts, setFonts] = useState<string[]>([]);
   const [selectedFont, setSelectedFont] = useState('Inter');
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
@@ -136,7 +153,7 @@ const App = () => {
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
-  const openDirectoryPicker = async () => {
+  const chooseDirectory = async () => {
     try {
       const selected = await open({
         directory: true,
@@ -152,54 +169,20 @@ const App = () => {
     }
   };
 
-  const getSystemFonts = async () => {
-    try {
-      setFonts([
-        'Arial',
-        'Calibri',
-        'Cambria',
-        'Comic Sans MS',
-        'Courier New',
-        'Georgia',
-        'Helvetica',
-        'Inter',
-        'JetBrains Mono',
-        'Menlo',
-        'Monaco',
-        'Roboto',
-        'Segoe UI',
-        'Times New Roman',
-        'Verdana',
-      ]);
-    } catch (error) {
-      console.error('Failed to get system fonts:', error);
-      setFonts(['Arial', 'Helvetica', 'Times New Roman', 'Courier New']);
-    }
-  };
-
   const updateEditorFont = () => {
-    if (editor) {
-      editor.view.dom.style.fontFamily = selectedFont;
-      editor.view.dom.style.fontSize = `${fontSize}px`;
-      editor.view.dom.style.lineHeight = getLineHeight();
-    }
-  };
+    if (!editor) return;
 
-  const fontSizeOptions = ['12', '14', '16', '18', '20', '22', '24'];
+    editor.view.dom.style.fontFamily = selectedFont;
+    editor.view.dom.style.fontSize = `${fontSize}px`;
+  };
 
   useEffect(() => {
-    getSystemFonts();
-  }, []);
+    updateCharacterCount(editor);
+  }, [editor]);
 
   useEffect(() => {
     updateEditorFont();
   }, [selectedFont, fontSize, editor]);
-
-  useEffect(() => {
-    if (editor) {
-      updateCharacterCount(editor);
-    }
-  }, [editor]);
 
   if (!editor) {
     return null;
@@ -269,7 +252,7 @@ const App = () => {
                     <SelectValue placeholder='Size' />
                   </SelectTrigger>
                   <SelectContent>
-                    {fontSizeOptions.map((size) => (
+                    {['12', '14', '16', '18', '20', '22', '24'].map((size) => (
                       <SelectItem key={size} value={size}>
                         {size}px
                       </SelectItem>
@@ -285,7 +268,7 @@ const App = () => {
                   <Button
                     variant='outline'
                     size='sm'
-                    onClick={openDirectoryPicker}
+                    onClick={chooseDirectory}
                     title={directory || 'Choose a directory'}
                     className='flex cursor-pointer items-center gap-2'
                   >
