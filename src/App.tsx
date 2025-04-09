@@ -21,6 +21,7 @@ import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { formatDate } from './lib/utils';
+import ListKeymap from '@tiptap/extension-list-keymap';
 
 type Position = {
   column: number;
@@ -62,6 +63,7 @@ function App() {
       History,
       Italic,
       ListItem,
+      ListKeymap,
       OrderedList,
       Paragraph,
       Strike,
