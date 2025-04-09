@@ -81,7 +81,7 @@
       @apply flex items-start;
 
       > label {
-        @apply mr-2 flex-none select-none;
+        @apply mr-3 flex-none select-none;
       }
 
       > div {
