@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Position } from '@/lib/types';
 import { useTheme } from '@/providers/theme-provider';
+import { open } from '@tauri-apps/api/dialog';
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
 import BulletList from '@tiptap/extension-bullet-list';
@@ -31,8 +32,10 @@ import TaskList from '@tiptap/extension-task-list';
 import Text from '@tiptap/extension-text';
 import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
-import { Moon, Settings, Sun } from 'lucide-react';
+import { Folder, Moon, Settings, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
+import { getLastPathSegment } from './lib/utils';
 
 const App = () => {
   const { theme, setTheme } = useTheme();
@@ -51,6 +54,8 @@ const App = () => {
   });
 
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+
+  const [saveDirectory, setSaveDirectory] = useState('');
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
@@ -147,6 +152,22 @@ const App = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
+  const openDirectoryPicker = async () => {
+    try {
+      const selected = await open({
+        directory: true, // Indicates we want to select a directory, not a file
+        multiple: false, // Only allow selecting one directory
+      });
+
+      if (selected !== null) {
+        const path = Array.isArray(selected) ? selected[0] : selected;
+        setSaveDirectory(path);
+      }
+    } catch (error) {
+      console.error('Failed to open directory picker:', error);
+    }
+  };
+
   useEffect(() => {
     if (!editorContainerRef.current || !lineNumbersRef.current) return;
 
@@ -231,7 +252,8 @@ const App = () => {
                 Customize your editing experience with these settings.
               </DialogDescription>
             </DialogHeader>
-            <div className='py-4'>
+            <div className='space-y-4 py-4'>
+              {/* Theme Setting */}
               <div className='flex items-center justify-between'>
                 <span className='text-muted-foreground'>Theme</span>
                 <Button
@@ -252,6 +274,27 @@ const App = () => {
                     </>
                   )}
                 </Button>
+              </div>
+
+              {/* Directory Chooser */}
+              <div className='space-y-2'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-muted-foreground'>Save location</span>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={openDirectoryPicker}
+                    title={saveDirectory || 'Choose a directory'}
+                    className='flex cursor-pointer items-center gap-2'
+                  >
+                    <Folder className='h-4 w-4' />
+                    <span className='max-w-[150px] truncate'>
+                      {saveDirectory
+                        ? getLastPathSegment(saveDirectory)
+                        : 'Choose'}
+                    </span>
+                  </Button>
+                </div>
               </div>
             </div>
           </DialogContent>
