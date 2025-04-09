@@ -4,6 +4,7 @@ import BulletList from '@tiptap/extension-bullet-list';
 import CharacterCount from '@tiptap/extension-character-count';
 import Document from '@tiptap/extension-document';
 import Heading from '@tiptap/extension-heading';
+import Highlight from '@tiptap/extension-highlight';
 import History from '@tiptap/extension-history';
 import Italic from '@tiptap/extension-italic';
 import ListItem from '@tiptap/extension-list-item';
@@ -51,6 +52,7 @@ function App() {
       CharacterCount.configure(),
       Document,
       Heading.configure({ levels: [1, 2, 3] }),
+      Highlight.configure({ multicolor: true }),
       History,
       Italic,
       ListItem,
