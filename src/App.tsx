@@ -10,6 +10,8 @@ import ListItem from '@tiptap/extension-list-item';
 import OrderedList from '@tiptap/extension-ordered-list';
 import Paragraph from '@tiptap/extension-paragraph';
 import Strike from '@tiptap/extension-strike';
+import TaskItem from '@tiptap/extension-task-item';
+import TaskList from '@tiptap/extension-task-list';
 import Text from '@tiptap/extension-text';
 import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
 import { useEffect, useRef, useState } from 'react';
@@ -55,6 +57,8 @@ function App() {
       OrderedList,
       Paragraph,
       Strike,
+      TaskItem,
+      TaskList,
       Text,
     ],
     autofocus: true,
@@ -105,8 +109,10 @@ function App() {
     const count = (nodes: JSONContent[]): number => {
       let total = 0;
 
+      const listNodes = ['bulletlist', 'orderedlist', 'tasklist'];
+
       for (const node of nodes) {
-        if (node.type === 'orderedList' || node.type === 'bulletList') {
+        if (listNodes.includes((node.type ?? '').toLowerCase())) {
           total += count(node.content ?? []);
         } else {
           total += 1;
@@ -117,7 +123,7 @@ function App() {
     };
 
     return count(content);
-  }
+  };
 
   useEffect(() => {
     if (!editorContainerRef.current || !lineNumbersRef.current) return;
@@ -157,14 +163,13 @@ function App() {
         >
           <div className='px-2 font-mono text-sm text-gray-500'>
             <div className='px-2 font-mono text-sm text-gray-500'>
-              {Array.from({ length: getLineCount() })
-                .map((_, lineNumber) => {
-                  return (
-                    <div key={`line-${lineNumber + 1}`} className='h-6'>
-                      {lineNumber + 1}
-                    </div>
-                  );
-                })}
+              {Array.from({ length: getLineCount() }).map((_, lineNumber) => {
+                return (
+                  <div key={`line-${lineNumber + 1}`} className='h-6'>
+                    {lineNumber + 1}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
