@@ -1,5 +1,6 @@
 import { Position } from '@/lib/types';
 import { useSettings } from '@/providers/settings-provider';
+import { Mathematics } from '@tiptap-pro/extension-mathematics';
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
 import BulletList from '@tiptap/extension-bullet-list';
@@ -26,6 +27,7 @@ import {
   useEditor,
 } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
+import 'katex/dist/katex.min.css';
 import { useRef } from 'react';
 
 interface EditorProps {
@@ -42,10 +44,12 @@ const Editor: React.FC<EditorProps> = ({
   const editorContainerRef = useRef(null);
 
   const editor = useEditor({
+    shouldRerenderOnTransaction: true,
     extensions: [
       Blockquote,
       Bold,
       BulletList,
+      Mathematics,
       CharacterCount.configure(),
       Code,
       Document,

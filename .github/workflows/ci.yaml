@@ -35,6 +35,9 @@ jobs:
 
     runs-on: macos-latest
 
+    env:
+      TIPTAP_PRO_TOKEN: ${{ secrets.TIPTAP_PRO_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
 

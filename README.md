@@ -7,7 +7,8 @@
 > [!WARNING]
 > This project is in very early stages.
 
-<img width="1134" alt="Screenshot 2025-04-09 at 2 19 15 AM" src="https://github.com/user-attachments/assets/48420b03-4c29-4d8d-a07a-afe9b2d244b2" />
+<img width="912" alt="Screenshot 2025-04-09 at 12 42 55 PM" src="https://github.com/user-attachments/assets/86df3d82-71bf-4cb4-85a9-7835d92719bb" />
+
 
 I'm writing this to encourage myself to do more daily note-taking, while also
 having a custom app I can easily extend and integrate with whatever services I
