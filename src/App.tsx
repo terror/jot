@@ -1,11 +1,14 @@
+import { Time } from '@/components/time';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Position } from '@/lib/types';
+import { useTheme } from '@/providers/theme-provider';
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
 import BulletList from '@tiptap/extension-bullet-list';
@@ -28,50 +31,12 @@ import TaskList from '@tiptap/extension-task-list';
 import Text from '@tiptap/extension-text';
 import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
-import { Calendar, Settings, Timer } from 'lucide-react';
+import { Moon, Settings, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import { Button } from './components/ui/button';
-
-type Position = {
-  column: number;
-  line: number;
-};
-
-const Time = () => {
-  const date = new Date();
-
-  const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  let hours = date.getHours();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-
-  return (
-    <div className='flex'>
-      <div className='flex items-center gap-x-1'>
-        <Calendar className='h-3 w-3' />
-        <p>
-          {dayOfWeek} {month}.{day}
-        </p>
-      </div>
-      <p className='px-2'>|</p>
-      <div className='flex items-center gap-x-1'>
-        <Timer className='h-3 w-3' />
-        <p>
-          {hours}:{minutes} {ampm}
-        </p>
-      </div>
-    </div>
-  );
-};
-
 const App = () => {
+  const { theme, setTheme } = useTheme();
+
   const [cursorPosition, setCursorPosition] = useState<Position>({
     line: 1,
     column: 1,
@@ -178,6 +143,10 @@ const App = () => {
     return count(content);
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   useEffect(() => {
     if (!editorContainerRef.current || !lineNumbersRef.current) return;
 
@@ -206,16 +175,16 @@ const App = () => {
   }
 
   return (
-    <div className='flex h-screen w-screen flex-col bg-gray-100'>
-      <div className='flex flex-grow overflow-hidden bg-white caret-black'>
+    <div className='bg-background flex h-screen w-screen flex-col'>
+      <div className='bg-background caret-foreground flex flex-grow overflow-hidden'>
         {/* Line Numbers */}
         <div
           ref={lineNumbersRef}
-          className='pointer-events-none overflow-hidden border-r border-gray-200 bg-gray-100 text-right select-none'
+          className='border-border bg-card/70 pointer-events-none overflow-hidden border-r text-right select-none'
           style={{ paddingTop: '0.1rem' }}
         >
-          <div className='px-2 font-mono text-sm text-gray-500'>
-            <div className='px-2 font-mono text-sm text-gray-500'>
+          <div className='text-muted-foreground px-2 font-mono text-sm'>
+            <div className='text-muted-foreground px-2 font-mono text-sm'>
               {Array.from({ length: getLineCount() }).map((_, lineNumber) => {
                 return (
                   <div key={`line-${lineNumber + 1}`} className='h-6'>
@@ -262,9 +231,29 @@ const App = () => {
                 Customize your editing experience with these settings.
               </DialogDescription>
             </DialogHeader>
-            <DialogFooter>
-              <Button>Save</Button>
-            </DialogFooter>
+            <div className='py-4'>
+              <div className='flex items-center justify-between'>
+                <span className='text-muted-foreground'>Theme</span>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={toggleTheme}
+                  className='flex items-center gap-2'
+                >
+                  {theme === 'dark' ? (
+                    <>
+                      <Sun className='h-4 w-4' />
+                      <span>Light</span>
+                    </>
+                  ) : (
+                    <>
+                      <Moon className='h-4 w-4' />
+                      <span>Dark</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -275,13 +264,13 @@ const App = () => {
             autoComplete='off'
             spellCheck={false}
             editor={editor}
-            className='h-full'
+            className='text-foreground h-full'
           />
         </div>
       </div>
 
       {/* Status */}
-      <div className='border-t border-gray-300 bg-gray-200 text-xs text-gray-600'>
+      <div className='border-border bg-card text-muted-foreground border-t text-xs'>
         <div className='flex justify-between p-2'>
           <div className='flex gap-2'>
             <span>
@@ -290,7 +279,7 @@ const App = () => {
             <span>C {characterCount.characters}</span>
             <span>W {characterCount.words}</span>
           </div>
-          <div className='flex gap-x-2'>
+          <div className='flex items-center gap-x-2'>
             <Time />
             <Settings
               onClick={() => setSettingsDialogOpen(true)}
