@@ -7,6 +7,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Position } from '@/lib/types';
 import { useTheme } from '@/providers/theme-provider';
 import { open } from '@tauri-apps/api/dialog';
@@ -57,6 +64,15 @@ const App = () => {
 
   const [saveDirectory, setSaveDirectory] = useState('');
 
+  // New states for font settings
+  const [availableFonts, setAvailableFonts] = useState<string[]>([]);
+  const [selectedFont, setSelectedFont] = useState('Inter');
+  const [fontSize, setFontSize] = useState('16');
+
+  const getLineHeight = () => {
+    return `${Math.round(parseInt(fontSize) * 1.5)}px`;
+  };
+
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
   const lineNumbersRef = useRef<HTMLDivElement>(null);
@@ -88,6 +104,7 @@ const App = () => {
     editorProps: {
       attributes: {
         class: 'h-full w-full focus:outline-none prose prose-sm max-w-none',
+        style: `font-family: ${selectedFont}; font-size: ${fontSize}px; line-height: ${getLineHeight()};`,
       },
     },
     onUpdate: ({ editor }) => {
@@ -168,6 +185,48 @@ const App = () => {
     }
   };
 
+  // Function to get system fonts
+  const getSystemFonts = async () => {
+    try {
+      // In a real implementation, this would use a Tauri API to get system fonts
+      // For now, we'll use some common fonts as a placeholder
+      const commonFonts = [
+        'Arial',
+        'Calibri',
+        'Cambria',
+        'Comic Sans MS',
+        'Courier New',
+        'Georgia',
+        'Helvetica',
+        'Inter',
+        'JetBrains Mono',
+        'Menlo',
+        'Monaco',
+        'Roboto',
+        'Segoe UI',
+        'Times New Roman',
+        'Verdana',
+      ];
+      setAvailableFonts(commonFonts);
+    } catch (error) {
+      console.error('Failed to get system fonts:', error);
+      // Fallback to common fonts if system fonts can't be retrieved
+      setAvailableFonts(['Arial', 'Helvetica', 'Times New Roman', 'Courier New']);
+    }
+  };
+
+  // Function to update font in the editor
+  const updateEditorFont = () => {
+    if (editor) {
+      editor.view.dom.style.fontFamily = selectedFont;
+      editor.view.dom.style.fontSize = `${fontSize}px`;
+      editor.view.dom.style.lineHeight = getLineHeight();
+    }
+  };
+
+  // Font size options
+  const fontSizeOptions = ['12', '14', '16', '18', '20', '22', '24'];
+
   useEffect(() => {
     if (!editorContainerRef.current || !lineNumbersRef.current) return;
 
@@ -191,9 +250,21 @@ const App = () => {
     }
   }, [editor]);
 
+  // Load system fonts when component mounts
+  useEffect(() => {
+    getSystemFonts();
+  }, []);
+
+  // Update editor font when font settings change
+  useEffect(() => {
+    updateEditorFont();
+  }, [selectedFont, fontSize, editor]);
+
   if (!editor) {
     return null;
   }
+
+  const lineHeightStyle = getLineHeight();
 
   return (
     <div className='bg-background flex h-screen w-screen flex-col'>
@@ -202,18 +273,25 @@ const App = () => {
         <div
           ref={lineNumbersRef}
           className='border-border bg-card/70 pointer-events-none overflow-hidden border-r text-right select-none'
-          style={{ paddingTop: '0.1rem' }}
+          style={{
+            fontSize: `${fontSize}px`,
+            fontFamily: selectedFont
+          }}
         >
-          <div className='text-muted-foreground px-2 font-mono text-sm'>
-            <div className='text-muted-foreground px-2 font-mono text-sm'>
-              {Array.from({ length: getLineCount() }).map((_, lineNumber) => {
-                return (
-                  <div key={`line-${lineNumber + 1}`} className='h-6'>
-                    {lineNumber + 1}
-                  </div>
-                );
-              })}
-            </div>
+          <div className='text-muted-foreground px-2 font-mono'>
+            {Array.from({ length: getLineCount() }).map((_, lineNumber) => {
+              return (
+                <div
+                  key={`line-${lineNumber + 1}`}
+                  style={{
+                    height: lineHeightStyle,
+                    lineHeight: lineHeightStyle
+                  }}
+                >
+                  {lineNumber + 1}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -253,27 +331,40 @@ const App = () => {
               </DialogDescription>
             </DialogHeader>
             <div className='space-y-4 py-4'>
-              {/* Theme Setting */}
+
+
+              {/* Font Family Setting */}
               <div className='flex items-center justify-between'>
-                <span className='text-muted-foreground'>Theme</span>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={toggleTheme}
-                  className='flex items-center gap-2'
-                >
-                  {theme === 'dark' ? (
-                    <>
-                      <Sun className='h-4 w-4' />
-                      <span>Light</span>
-                    </>
-                  ) : (
-                    <>
-                      <Moon className='h-4 w-4' />
-                      <span>Dark</span>
-                    </>
-                  )}
-                </Button>
+                <span className='text-muted-foreground'>Font</span>
+                <Select value={selectedFont} onValueChange={setSelectedFont}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select font" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableFonts.map((font) => (
+                      <SelectItem key={font} value={font}>
+                        <span style={{ fontFamily: font }}>{font}</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Font Size Setting */}
+              <div className='flex items-center justify-between'>
+                <span className='text-muted-foreground'>Font size</span>
+                <Select value={fontSize} onValueChange={setFontSize}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fontSizeOptions.map((size) => (
+                      <SelectItem key={size} value={size}>
+                        {size}px
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Directory Chooser */}
@@ -295,6 +386,29 @@ const App = () => {
                     </span>
                   </Button>
                 </div>
+              </div>
+
+              {/* Theme Setting */}
+              <div className='flex items-center justify-between'>
+                <span className='text-muted-foreground'>Theme</span>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={toggleTheme}
+                  className='flex items-center gap-2'
+                >
+                  {theme === 'dark' ? (
+                    <>
+                      <Sun className='h-4 w-4' />
+                      <span>Light</span>
+                    </>
+                  ) : (
+                    <>
+                      <Moon className='h-4 w-4' />
+                      <span>Dark</span>
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           </DialogContent>
