@@ -1,3 +1,11 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
 import BulletList from '@tiptap/extension-bullet-list';
@@ -20,8 +28,10 @@ import TaskList from '@tiptap/extension-task-list';
 import Text from '@tiptap/extension-text';
 import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
-import { Calendar, Timer } from 'lucide-react';
+import { Calendar, Settings, Timer } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
+import { Button } from './components/ui/button';
 
 type Position = {
   column: number;
@@ -74,6 +84,8 @@ const App = () => {
     characters: 0,
     words: 0,
   });
+
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
@@ -241,6 +253,21 @@ const App = () => {
           </BubbleMenu>
         )}
 
+        {/* Settings Dialog */}
+        <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
+          <DialogContent className='sm:max-w-[425px]'>
+            <DialogHeader>
+              <DialogTitle>Settings</DialogTitle>
+              <DialogDescription>
+                Customize your editing experience with these settings.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button>Save</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Editor */}
         <div ref={editorContainerRef} className='h-full flex-1 overflow-auto'>
           <EditorContent
@@ -263,7 +290,13 @@ const App = () => {
             <span>C {characterCount.characters}</span>
             <span>W {characterCount.words}</span>
           </div>
-          <Time />
+          <div className='flex gap-x-2'>
+            <Time />
+            <Settings
+              onClick={() => setSettingsDialogOpen(true)}
+              className='ml-2 h-4 w-4 cursor-pointer'
+            />
+          </div>
         </div>
       </div>
     </div>
