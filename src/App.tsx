@@ -20,22 +20,52 @@ import TaskList from '@tiptap/extension-task-list';
 import Text from '@tiptap/extension-text';
 import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
+import { Calendar, Timer } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-
-import { formatDate } from './lib/utils';
 
 type Position = {
   column: number;
   line: number;
 };
 
-function App() {
+const Time = () => {
+  const date = new Date();
+
+  const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  let hours = date.getHours();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  return (
+    <div className='flex'>
+      <div className='flex items-center gap-x-1'>
+        <Calendar className='h-3 w-3' />
+        <p>
+          {dayOfWeek} {month}.{day}
+        </p>
+      </div>
+      <p className='px-2'>|</p>
+      <div className='flex items-center gap-x-1'>
+        <Timer className='h-3 w-3' />
+        <p>
+          {hours}:{minutes} {ampm}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const App = () => {
   const [cursorPosition, setCursorPosition] = useState<Position>({
     line: 1,
     column: 1,
   });
-
-  const [currentDate] = useState<string>(formatDate(new Date()));
 
   const [characterCount, setCharacterCount] = useState<{
     characters: number;
@@ -233,11 +263,11 @@ function App() {
             <span>C {characterCount.characters}</span>
             <span>W {characterCount.words}</span>
           </div>
-          <div>{currentDate}</div>
+          <Time />
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default App;
