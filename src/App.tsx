@@ -11,6 +11,7 @@ import Highlight from '@tiptap/extension-highlight';
 import History from '@tiptap/extension-history';
 import Italic from '@tiptap/extension-italic';
 import ListItem from '@tiptap/extension-list-item';
+import ListKeymap from '@tiptap/extension-list-keymap';
 import OrderedList from '@tiptap/extension-ordered-list';
 import Paragraph from '@tiptap/extension-paragraph';
 import Strike from '@tiptap/extension-strike';
@@ -18,10 +19,10 @@ import TaskItem from '@tiptap/extension-task-item';
 import TaskList from '@tiptap/extension-task-list';
 import Text from '@tiptap/extension-text';
 import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { formatDate } from './lib/utils';
-import ListKeymap from '@tiptap/extension-list-keymap';
 
 type Position = {
   column: number;
@@ -183,6 +184,32 @@ function App() {
             </div>
           </div>
         </div>
+
+        {/* Selection Menu */}
+        {editor && (
+          <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+            <div className='bubble-menu'>
+              <button
+                onClick={() => editor.chain().focus().toggleBold().run()}
+                className={editor.isActive('bold') ? 'is-active' : ''}
+              >
+                Bold
+              </button>
+              <button
+                onClick={() => editor.chain().focus().toggleItalic().run()}
+                className={editor.isActive('italic') ? 'is-active' : ''}
+              >
+                Italic
+              </button>
+              <button
+                onClick={() => editor.chain().focus().toggleStrike().run()}
+                className={editor.isActive('strike') ? 'is-active' : ''}
+              >
+                Strike
+              </button>
+            </div>
+          </BubbleMenu>
+        )}
 
         {/* Editor */}
         <div ref={editorContainerRef} className='h-full flex-1 overflow-auto'>
