@@ -2,7 +2,10 @@ import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
 import BulletList from '@tiptap/extension-bullet-list';
 import CharacterCount from '@tiptap/extension-character-count';
+import Code from '@tiptap/extension-code';
 import Document from '@tiptap/extension-document';
+import Dropcursor from '@tiptap/extension-dropcursor';
+import Gapcursor from '@tiptap/extension-gapcursor';
 import Heading from '@tiptap/extension-heading';
 import Highlight from '@tiptap/extension-highlight';
 import History from '@tiptap/extension-history';
@@ -50,7 +53,10 @@ function App() {
       Bold,
       BulletList,
       CharacterCount.configure(),
+      Code,
       Document,
+      Dropcursor,
+      Gapcursor,
       Heading.configure({ levels: [1, 2, 3] }),
       Highlight.configure({ multicolor: true }),
       History,
