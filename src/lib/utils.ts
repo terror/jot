@@ -1,9 +1,29 @@
 import { type ClassValue, clsx } from 'clsx';
+import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+/**
+ * Utility function to display error messages in toast notifications
+ * @param error - The error to display
+ * @param fallbackMessage - Optional fallback message when error is not an Error instance
+ * @param toast - The toast instance
+ */
+export const displayError = (
+  error: unknown,
+  fallbackMessage = 'An unknown error occurred'
+) => {
+  if (error instanceof Error) {
+    toast.error(error.message);
+  } else if (typeof error === 'string') {
+    toast.error(error);
+  } else {
+    toast.error(fallbackMessage);
+  }
+};
 
 /**
  * Extracts the last segment from a string path.

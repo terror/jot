@@ -1,3 +1,4 @@
+import Editor from '@/components/editor';
 import { Time } from '@/components/time';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,34 +16,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Position } from '@/lib/types';
+import { displayError, getLastPathSegment } from '@/lib/utils';
 import { useTheme } from '@/providers/theme-provider';
 import { open } from '@tauri-apps/api/dialog';
-import Blockquote from '@tiptap/extension-blockquote';
-import Bold from '@tiptap/extension-bold';
-import BulletList from '@tiptap/extension-bullet-list';
-import CharacterCount from '@tiptap/extension-character-count';
-import Code from '@tiptap/extension-code';
-import Document from '@tiptap/extension-document';
-import Dropcursor from '@tiptap/extension-dropcursor';
-import Gapcursor from '@tiptap/extension-gapcursor';
-import Heading from '@tiptap/extension-heading';
-import Highlight from '@tiptap/extension-highlight';
-import History from '@tiptap/extension-history';
-import Italic from '@tiptap/extension-italic';
-import ListItem from '@tiptap/extension-list-item';
-import ListKeymap from '@tiptap/extension-list-keymap';
-import OrderedList from '@tiptap/extension-ordered-list';
-import Paragraph from '@tiptap/extension-paragraph';
-import Strike from '@tiptap/extension-strike';
-import TaskItem from '@tiptap/extension-task-item';
-import TaskList from '@tiptap/extension-task-list';
-import Text from '@tiptap/extension-text';
-import { Editor, EditorContent, useEditor } from '@tiptap/react';
-import { BubbleMenu } from '@tiptap/react';
 import { Folder, Moon, Settings, Sun } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-
-import { getLastPathSegment } from './lib/utils';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 const App = () => {
   const { theme, setTheme } = useTheme();
@@ -52,15 +31,12 @@ const App = () => {
     column: 1,
   });
 
-  const [characterCount, setCharacterCount] = useState<{
-    characters: number;
-    words: number;
-  }>({
+  const [statistics, setStatistics] = useState({
     characters: 0,
     words: 0,
   });
 
-  const [fonts] = useState<string[]>([
+  const [fonts] = useState([
     'Arial',
     'Calibri',
     'Cambria',
@@ -79,77 +55,9 @@ const App = () => {
   ]);
 
   const [directory, setDirectory] = useState('');
+  const [font, setFont] = useState('Inter');
   const [fontSize, setFontSize] = useState('16');
-  const [selectedFont, setSelectedFont] = useState('Inter');
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-
-  const editorContainerRef = useRef<HTMLDivElement>(null);
-
-  const getLineHeight = () => `${Math.round(parseInt(fontSize) * 1.5)}px`;
-
-  const editor = useEditor({
-    extensions: [
-      Blockquote,
-      Bold,
-      BulletList,
-      CharacterCount.configure(),
-      Code,
-      Document,
-      Dropcursor,
-      Gapcursor,
-      Heading.configure({ levels: [1, 2, 3] }),
-      Highlight.configure({ multicolor: true }),
-      History,
-      Italic,
-      ListItem,
-      ListKeymap,
-      OrderedList,
-      Paragraph,
-      Strike,
-      TaskItem,
-      TaskList,
-      Text,
-    ],
-    autofocus: true,
-    editorProps: {
-      attributes: {
-        class: 'h-full w-full focus:outline-none prose prose-sm max-w-none',
-        style: `font-family: ${selectedFont}; font-size: ${fontSize}px; line-height: ${getLineHeight()};`,
-      },
-    },
-    onUpdate: ({ editor }) => {
-      updateCursorPosition(editor);
-      updateCharacterCount(editor);
-    },
-    onSelectionUpdate: ({ editor }) => {
-      updateCursorPosition(editor);
-    },
-  });
-
-  const updateCursorPosition = (editor: Editor | null): void => {
-    if (!editor) return;
-
-    const { from } = editor.state.selection;
-
-    const position = editor.view.state.doc.resolve(from);
-
-    const line = (position as any).path[1] + 1;
-
-    setCursorPosition({
-      line,
-      column: position.parentOffset + 1,
-    });
-  };
-
-  const updateCharacterCount = (editor: Editor | null): void => {
-    if (!editor) return;
-
-    const characters = editor.storage.characterCount.characters();
-
-    const words = editor.storage.characterCount.words();
-
-    setCharacterCount({ characters, words });
-  };
 
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
@@ -160,63 +68,34 @@ const App = () => {
         multiple: false,
       });
 
-      if (selected !== null) {
-        const path = Array.isArray(selected) ? selected[0] : selected;
-        setDirectory(path);
+      if (selected === null) {
+        throw new Error('No directory selected');
       }
+
+      const directory = Array.isArray(selected) ? selected[0] : selected;
+
+      setDirectory(directory);
+
+      toast.success(`Successfully selected ${directory} as your save location`);
     } catch (error) {
-      console.error('Failed to open directory picker:', error);
+      displayError(error);
     }
   };
 
-  const updateEditorFont = () => {
-    if (!editor) return;
-
-    editor.view.dom.style.fontFamily = selectedFont;
-    editor.view.dom.style.fontSize = `${fontSize}px`;
+  const handleCursorPositionChange = (position: Position) => {
+    setCursorPosition(position);
   };
 
-  useEffect(() => {
-    updateCharacterCount(editor);
-  }, [editor]);
-
-  useEffect(() => {
-    updateEditorFont();
-  }, [selectedFont, fontSize, editor]);
-
-  if (!editor) {
-    return null;
-  }
+  const handleStatisticsChange = (stats: {
+    characters: number;
+    words: number;
+  }) => {
+    setStatistics(stats);
+  };
 
   return (
     <div className='bg-background flex h-screen w-screen flex-col'>
       <div className='bg-background caret-foreground flex flex-grow overflow-hidden'>
-        {/* Selection Menu */}
-        {editor && (
-          <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-            <div className='bubble-menu'>
-              <button
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                className={editor.isActive('bold') ? 'is-active' : ''}
-              >
-                Bold
-              </button>
-              <button
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-                className={editor.isActive('italic') ? 'is-active' : ''}
-              >
-                Italic
-              </button>
-              <button
-                onClick={() => editor.chain().focus().toggleStrike().run()}
-                className={editor.isActive('strike') ? 'is-active' : ''}
-              >
-                Strike
-              </button>
-            </div>
-          </BubbleMenu>
-        )}
-
         {/* Settings Dialog */}
         <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
           <DialogContent className='sm:max-w-[425px]'>
@@ -230,7 +109,7 @@ const App = () => {
               {/* Font Family Setting */}
               <div className='flex items-center justify-between'>
                 <span className='text-muted-foreground'>Font</span>
-                <Select value={selectedFont} onValueChange={setSelectedFont}>
+                <Select value={font} onValueChange={setFont}>
                   <SelectTrigger>
                     <SelectValue placeholder='Select font' />
                   </SelectTrigger>
@@ -306,16 +185,13 @@ const App = () => {
           </DialogContent>
         </Dialog>
 
-        {/* Editor */}
-        <div ref={editorContainerRef} className='h-full flex-1 overflow-auto'>
-          <EditorContent
-            autoCorrect='off'
-            autoComplete='off'
-            spellCheck={false}
-            editor={editor}
-            className='text-foreground h-full'
-          />
-        </div>
+        {/* Editor Component */}
+        <Editor
+          font={font}
+          fontSize={fontSize}
+          onCursorPositionChange={handleCursorPositionChange}
+          onStatisticsChange={handleStatisticsChange}
+        />
       </div>
 
       {/* Status */}
@@ -327,8 +203,8 @@ const App = () => {
             <span>
               {cursorPosition.line}:{cursorPosition.column}
             </span>
-            <span>C {characterCount.characters}</span>
-            <span>W {characterCount.words}</span>
+            <span>C {statistics.characters}</span>
+            <span>W {statistics.words}</span>
           </div>
           <div className='flex items-center gap-x-2'>
             <Time />
