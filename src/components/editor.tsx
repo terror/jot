@@ -86,6 +86,7 @@ const Editor: React.FC<EditorProps> = ({
     const position = editor.view.state.doc.resolve(editor.state.selection.from);
 
     onCursorPositionChange({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       line: (position as any).path[1] + 1,
       column: position.parentOffset + 1,
     });

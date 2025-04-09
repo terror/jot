@@ -1,8 +1,17 @@
 ## jot
 
+[![CI](https://github.com/terror/jot/actions/workflows/ci.yaml/badge.svg)](https://github.com/terror/jot/actions/workflows/ci.yaml)
+
 **jot** is a developer-focused daily note-taking application.
 
+> [!WARNING]
+> This project is in very early stages.
+
 <img width="1134" alt="Screenshot 2025-04-09 at 2 19 15 AM" src="https://github.com/user-attachments/assets/48420b03-4c29-4d8d-a07a-afe9b2d244b2" />
+
+I'm writing this to encourage myself to do more daily note-taking, while also
+having a custom app I can easily extend and integrate with whatever services I
+want.
 
 ## Development
 
