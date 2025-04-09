@@ -20,7 +20,7 @@
 
 .tiptap {
   code {
-    @apply bg-muted text-foreground rounded-sm px-1 py-0.5 text-sm;
+    @apply bg-muted text-foreground rounded-sm px-1 py-0.5;
   }
 
   blockquote {
@@ -33,7 +33,7 @@
   h4,
   h5,
   h6 {
-    @apply pl-0.5 leading-tight;
+    @apply pl-2 leading-tight;
     text-wrap: pretty;
   }
 
@@ -61,12 +61,12 @@
   }
 
   p {
-    @apply pl-1;
+    @apply pl-2;
   }
 
   ul,
   ol {
-    @apply pl-7;
+    @apply pl-8;
 
     li,
     p {

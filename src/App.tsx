@@ -37,7 +37,7 @@ import Strike from '@tiptap/extension-strike';
 import TaskItem from '@tiptap/extension-task-item';
 import TaskList from '@tiptap/extension-task-list';
 import Text from '@tiptap/extension-text';
-import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
+import { Editor, EditorContent, useEditor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
 import { Folder, Moon, Settings, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -60,22 +60,15 @@ const App = () => {
     words: 0,
   });
 
-  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-
-  const [saveDirectory, setSaveDirectory] = useState('');
-
-  // New states for font settings
-  const [availableFonts, setAvailableFonts] = useState<string[]>([]);
-  const [selectedFont, setSelectedFont] = useState('Inter');
+  const [directory, setDirectory] = useState('');
   const [fontSize, setFontSize] = useState('16');
-
-  const getLineHeight = () => {
-    return `${Math.round(parseInt(fontSize) * 1.5)}px`;
-  };
+  const [fonts, setFonts] = useState<string[]>([]);
+  const [selectedFont, setSelectedFont] = useState('Inter');
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
-  const lineNumbersRef = useRef<HTMLDivElement>(null);
+  const getLineHeight = () => `${Math.round(parseInt(fontSize) * 1.5)}px`;
 
   const editor = useEditor({
     extensions: [
@@ -123,8 +116,10 @@ const App = () => {
 
     const position = editor.view.state.doc.resolve(from);
 
+    const line = (position as any).path[1] + 1;
+
     setCursorPosition({
-      line: (position as any).path[1] + 1,
+      line,
       column: position.parentOffset + 1,
     });
   };
@@ -139,58 +134,27 @@ const App = () => {
     setCharacterCount({ characters, words });
   };
 
-  const getLineCount = (): number => {
-    if (!editor) return 0;
-
-    const content = editor.getJSON().content;
-
-    if (!content) return 0;
-
-    const count = (nodes: JSONContent[]): number => {
-      let total = 0;
-
-      const listNodes = ['bulletlist', 'orderedlist', 'tasklist'];
-
-      for (const node of nodes) {
-        if (listNodes.includes((node.type ?? '').toLowerCase())) {
-          total += count(node.content ?? []);
-        } else {
-          total += 1;
-        }
-      }
-
-      return total;
-    };
-
-    return count(content);
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
   const openDirectoryPicker = async () => {
     try {
       const selected = await open({
-        directory: true, // Indicates we want to select a directory, not a file
-        multiple: false, // Only allow selecting one directory
+        directory: true,
+        multiple: false,
       });
 
       if (selected !== null) {
         const path = Array.isArray(selected) ? selected[0] : selected;
-        setSaveDirectory(path);
+        setDirectory(path);
       }
     } catch (error) {
       console.error('Failed to open directory picker:', error);
     }
   };
 
-  // Function to get system fonts
   const getSystemFonts = async () => {
     try {
-      // In a real implementation, this would use a Tauri API to get system fonts
-      // For now, we'll use some common fonts as a placeholder
-      const commonFonts = [
+      setFonts([
         'Arial',
         'Calibri',
         'Cambria',
@@ -206,16 +170,13 @@ const App = () => {
         'Segoe UI',
         'Times New Roman',
         'Verdana',
-      ];
-      setAvailableFonts(commonFonts);
+      ]);
     } catch (error) {
       console.error('Failed to get system fonts:', error);
-      // Fallback to common fonts if system fonts can't be retrieved
-      setAvailableFonts(['Arial', 'Helvetica', 'Times New Roman', 'Courier New']);
+      setFonts(['Arial', 'Helvetica', 'Times New Roman', 'Courier New']);
     }
   };
 
-  // Function to update font in the editor
   const updateEditorFont = () => {
     if (editor) {
       editor.view.dom.style.fontFamily = selectedFont;
@@ -224,25 +185,15 @@ const App = () => {
     }
   };
 
-  // Font size options
   const fontSizeOptions = ['12', '14', '16', '18', '20', '22', '24'];
 
   useEffect(() => {
-    if (!editorContainerRef.current || !lineNumbersRef.current) return;
-
-    const editorContainer = editorContainerRef.current;
-    const lineNumbersContainer = lineNumbersRef.current;
-
-    const handleScroll = () => {
-      lineNumbersContainer.scrollTop = editorContainer.scrollTop;
-    };
-
-    editorContainer.addEventListener('scroll', handleScroll);
-
-    return () => {
-      editorContainer.removeEventListener('scroll', handleScroll);
-    };
+    getSystemFonts();
   }, []);
+
+  useEffect(() => {
+    updateEditorFont();
+  }, [selectedFont, fontSize, editor]);
 
   useEffect(() => {
     if (editor) {
@@ -250,51 +201,13 @@ const App = () => {
     }
   }, [editor]);
 
-  // Load system fonts when component mounts
-  useEffect(() => {
-    getSystemFonts();
-  }, []);
-
-  // Update editor font when font settings change
-  useEffect(() => {
-    updateEditorFont();
-  }, [selectedFont, fontSize, editor]);
-
   if (!editor) {
     return null;
   }
 
-  const lineHeightStyle = getLineHeight();
-
   return (
     <div className='bg-background flex h-screen w-screen flex-col'>
       <div className='bg-background caret-foreground flex flex-grow overflow-hidden'>
-        {/* Line Numbers */}
-        <div
-          ref={lineNumbersRef}
-          className='border-border bg-card/70 pointer-events-none overflow-hidden border-r text-right select-none'
-          style={{
-            fontSize: `${fontSize}px`,
-            fontFamily: selectedFont
-          }}
-        >
-          <div className='text-muted-foreground px-2 font-mono'>
-            {Array.from({ length: getLineCount() }).map((_, lineNumber) => {
-              return (
-                <div
-                  key={`line-${lineNumber + 1}`}
-                  style={{
-                    height: lineHeightStyle,
-                    lineHeight: lineHeightStyle
-                  }}
-                >
-                  {lineNumber + 1}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         {/* Selection Menu */}
         {editor && (
           <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
@@ -331,17 +244,15 @@ const App = () => {
               </DialogDescription>
             </DialogHeader>
             <div className='space-y-4 py-4'>
-
-
               {/* Font Family Setting */}
               <div className='flex items-center justify-between'>
                 <span className='text-muted-foreground'>Font</span>
                 <Select value={selectedFont} onValueChange={setSelectedFont}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select font" />
+                    <SelectValue placeholder='Select font' />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableFonts.map((font) => (
+                    {fonts.map((font) => (
                       <SelectItem key={font} value={font}>
                         <span style={{ fontFamily: font }}>{font}</span>
                       </SelectItem>
@@ -355,7 +266,7 @@ const App = () => {
                 <span className='text-muted-foreground'>Font size</span>
                 <Select value={fontSize} onValueChange={setFontSize}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Size" />
+                    <SelectValue placeholder='Size' />
                   </SelectTrigger>
                   <SelectContent>
                     {fontSizeOptions.map((size) => (
@@ -375,14 +286,12 @@ const App = () => {
                     variant='outline'
                     size='sm'
                     onClick={openDirectoryPicker}
-                    title={saveDirectory || 'Choose a directory'}
+                    title={directory || 'Choose a directory'}
                     className='flex cursor-pointer items-center gap-2'
                   >
                     <Folder className='h-4 w-4' />
                     <span className='max-w-[150px] truncate'>
-                      {saveDirectory
-                        ? getLastPathSegment(saveDirectory)
-                        : 'Choose'}
+                      {directory ? getLastPathSegment(directory) : 'Choose'}
                     </span>
                   </Button>
                 </div>
@@ -427,7 +336,9 @@ const App = () => {
       </div>
 
       {/* Status */}
-      <div className='border-border bg-card text-muted-foreground border-t text-xs'>
+      <div
+        className={`border-border border-t text-xs ${theme === 'dark' ? 'bg-zinc-900 text-zinc-400' : 'bg-zinc-800 text-zinc-300'}`}
+      >
         <div className='flex justify-between p-2'>
           <div className='flex gap-2'>
             <span>
