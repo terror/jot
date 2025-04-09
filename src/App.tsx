@@ -11,7 +11,7 @@ import OrderedList from '@tiptap/extension-ordered-list';
 import Paragraph from '@tiptap/extension-paragraph';
 import Strike from '@tiptap/extension-strike';
 import Text from '@tiptap/extension-text';
-import { Editor, EditorContent, useEditor } from '@tiptap/react';
+import { Editor, EditorContent, JSONContent, useEditor } from '@tiptap/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { formatDate } from './lib/utils';
@@ -95,6 +95,30 @@ function App() {
     setCharacterCount({ characters, words });
   };
 
+  const getLineCount = (): number => {
+    if (!editor) return 0;
+
+    const content = editor.getJSON().content;
+
+    if (!content) return 0;
+
+    const count = (nodes: JSONContent[]): number => {
+      let total = 0;
+
+      for (const node of nodes) {
+        if (node.type === 'orderedList' || node.type === 'bulletList') {
+          total += count(node.content ?? []);
+        } else {
+          total += 1;
+        }
+      }
+
+      return total;
+    };
+
+    return count(content);
+  }
+
   useEffect(() => {
     if (!editorContainerRef.current || !lineNumbersRef.current) return;
 
@@ -132,15 +156,16 @@ function App() {
           style={{ paddingTop: '0.1rem' }}
         >
           <div className='px-2 font-mono text-sm text-gray-500'>
-            {editor.getJSON().content?.map((_, nodeIndex) => {
-              const lineNumber = nodeIndex + 1;
-
-              return (
-                <div key={`line-${lineNumber}`} className='h-6'>
-                  {lineNumber}
-                </div>
-              );
-            })}
+            <div className='px-2 font-mono text-sm text-gray-500'>
+              {Array.from({ length: getLineCount() })
+                .map((_, lineNumber) => {
+                  return (
+                    <div key={`line-${lineNumber + 1}`} className='h-6'>
+                      {lineNumber + 1}
+                    </div>
+                  );
+                })}
+            </div>
           </div>
         </div>
 
