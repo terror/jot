@@ -1,4 +1,5 @@
 import { Position } from '@/lib/types';
+import { useSettings } from '@/providers/settings-provider';
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
 import BulletList from '@tiptap/extension-bullet-list';
@@ -25,21 +26,19 @@ import {
   useEditor,
 } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 interface EditorProps {
-  font: string;
-  fontSize: string;
   onCursorPositionChange: (position: Position) => void;
   onStatisticsChange: (stats: { characters: number; words: number }) => void;
 }
 
 const Editor: React.FC<EditorProps> = ({
-  font,
-  fontSize,
   onCursorPositionChange,
   onStatisticsChange,
 }) => {
+  const { settings } = useSettings();
+
   const editorContainerRef = useRef(null);
 
   const editor = useEditor({
@@ -69,7 +68,7 @@ const Editor: React.FC<EditorProps> = ({
     editorProps: {
       attributes: {
         class: 'h-full w-full focus:outline-none prose prose-sm max-w-none',
-        style: `font-family: ${font}; font-size: ${fontSize}px`,
+        style: `font-family: ${settings.font}; font-size: ${settings.fontSize}px`,
       },
     },
     onUpdate: ({ editor }) => {
@@ -84,14 +83,10 @@ const Editor: React.FC<EditorProps> = ({
   const updateCursorPosition = (editor: TiptapEditor | null) => {
     if (!editor) return;
 
-    const { from } = editor.state.selection;
-
-    const position = editor.view.state.doc.resolve(from);
-
-    const line = (position as any).path[1] + 1;
+    const position = editor.view.state.doc.resolve(editor.state.selection.from);
 
     onCursorPositionChange({
-      line,
+      line: (position as any).path[1] + 1,
       column: position.parentOffset + 1,
     });
   };
@@ -99,18 +94,11 @@ const Editor: React.FC<EditorProps> = ({
   const updateStatistics = (editor: TiptapEditor | null) => {
     if (!editor) return;
 
-    const characters = editor.storage.characterCount.characters();
-    const words = editor.storage.characterCount.words();
-
-    onStatisticsChange({ characters, words });
+    onStatisticsChange({
+      characters: editor.storage.characterCount.characters(),
+      words: editor.storage.characterCount.words(),
+    });
   };
-
-  useEffect(() => {
-    if (!editor) return;
-
-    editor.view.dom.style.fontFamily = font;
-    editor.view.dom.style.fontSize = `${fontSize}px`;
-  }, [font, fontSize, editor]);
 
   if (!editor) {
     return null;
