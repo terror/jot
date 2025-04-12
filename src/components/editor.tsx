@@ -1,4 +1,5 @@
 import { Position } from '@/lib/types';
+import { cn } from '@/lib/utils';
 import { useSettings } from '@/providers/settings-provider';
 import { Mathematics } from '@tiptap-pro/extension-mathematics';
 import Blockquote from '@tiptap/extension-blockquote';
@@ -28,6 +29,7 @@ import {
 } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
 import 'katex/dist/katex.min.css';
+import { BoldIcon, ItalicIcon, StrikethroughIcon } from 'lucide-react';
 import { useRef } from 'react';
 
 interface EditorProps {
@@ -116,21 +118,33 @@ const Editor: React.FC<EditorProps> = ({
         <div className='bubble-menu'>
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={editor.isActive('bold') ? 'is-active' : ''}
+            className={cn(
+              editor.isActive('bold') ? 'is-active' : '',
+              'cursor-pointer'
+            )}
+            title='Bold'
           >
-            Bold
+            <BoldIcon className='h-4 w-4' />
           </button>
           <button
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={editor.isActive('italic') ? 'is-active' : ''}
+            className={cn(
+              editor.isActive('italic') ? 'is-active' : '',
+              'cursor-pointer'
+            )}
+            title='Italic'
           >
-            Italic
+            <ItalicIcon className='h-4 w-4' />
           </button>
           <button
             onClick={() => editor.chain().focus().toggleStrike().run()}
-            className={editor.isActive('strike') ? 'is-active' : ''}
+            className={cn(
+              editor.isActive('strike') ? 'is-active' : '',
+              'cursor-pointer'
+            )}
+            title='Strikethrough'
           >
-            Strike
+            <StrikethroughIcon className='h-4 w-4' />
           </button>
         </div>
       </BubbleMenu>
