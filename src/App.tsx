@@ -1,10 +1,10 @@
+import { CommandMenu } from '@/components/command-menu';
 import Editor from '@/components/editor';
+import { SettingsDialog } from '@/components/settings-dialog';
 import { Time } from '@/components/time';
 import type { Position, Statistics } from '@/lib/types';
 import { useTheme } from '@/providers/theme-provider';
 import { useState } from 'react';
-
-import { SettingsDialog } from './components/settings-dialog';
 
 const App = () => {
   const { theme } = useTheme();
@@ -45,6 +45,7 @@ const App = () => {
           </div>
         </div>
       </div>
+      <CommandMenu />
     </div>
   );
 };
