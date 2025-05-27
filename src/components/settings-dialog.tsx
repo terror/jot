@@ -105,7 +105,7 @@ export const SettingsDialog = () => {
 
             {/* Font Size Setting */}
             <div className='flex items-center justify-between'>
-              <span className='text-muted-foreground'>Font size</span>
+              <span className='text-muted-foreground'>Font Size</span>
               <Select
                 value={settings.fontSize}
                 onValueChange={(value) => updateSettings({ fontSize: value })}
@@ -126,7 +126,7 @@ export const SettingsDialog = () => {
             {/* Directory Chooser */}
             <div className='space-y-2'>
               <div className='flex items-center justify-between'>
-                <span className='text-muted-foreground'>Save location</span>
+                <span className='text-muted-foreground'>Folder</span>
                 <Button
                   variant='outline'
                   size='sm'
