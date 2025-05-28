@@ -20,11 +20,15 @@
 
 .tiptap {
   code {
-    @apply bg-muted text-foreground rounded-sm px-1 py-0.5;
+    @apply bg-muted text-foreground rounded-sm;
+    padding: 0.25em 0.25em;
   }
 
   blockquote {
-    @apply border-muted text-muted-foreground ml-1 border-l-4 pl-1;
+    @apply border-muted text-muted-foreground;
+    border-left: 0.25em solid;
+    margin-left: 0.25em;
+    padding-left: 0.25em;
   }
 
   h1,
@@ -33,82 +37,131 @@
   h4,
   h5,
   h6 {
-    @apply pl-2 leading-tight;
+    @apply leading-tight;
     text-wrap: pretty;
   }
 
   h1 {
-    @apply text-2xl font-bold;
+    @apply font-bold;
+    padding-left: 0.1em;
+    font-size: 2em;
   }
 
   h2 {
-    @apply text-xl font-bold;
+    @apply font-bold;
+    padding-left: 0.15em;
+    font-size: 1.5em;
   }
 
   h3 {
-    @apply text-lg font-bold;
-  }
-
-  h4,
-  h5,
-  h6 {
-    @apply text-base;
+    @apply font-bold;
+    padding-left: 0.2em;
+    font-size: 1.25em;
   }
 
   mark {
-    @apply bg-accent text-accent-foreground rounded-sm px-1.5 py-0.5;
+    @apply bg-accent text-accent-foreground rounded-sm;
+    padding: 0.125em 0.375em;
     box-decoration-break: clone;
   }
 
   p {
-    @apply pl-2;
+    padding-left: 0.25em;
+    line-height: 1.6;
   }
 
   ul,
   ol {
-    @apply pl-8;
+    padding-left: 1.75em;
 
-    li,
-    p {
-      @apply m-0 p-0;
+    li {
+      padding: 0;
+      line-height: 1.5;
+
+      p {
+        padding-left: 0.25em;
+      }
     }
 
     ul,
     ol {
-      @apply pl-4;
+      padding-left: 1em;
+    }
+  }
+
+  ul {
+    list-style-type: disc;
+
+    ul {
+      list-style-type: circle;
+
+      ul {
+        list-style-type: square;
+      }
+    }
+  }
+
+  ol {
+    list-style-type: decimal;
+
+    ol {
+      list-style-type: lower-alpha;
+
+      ol {
+        list-style-type: lower-roman;
+      }
     }
   }
 
   ul[data-type='taskList'] {
-    @apply ml-0 list-none pl-2;
+    @apply list-none;
+    padding-left: 0.25em;
 
     li {
       @apply flex items-start;
+      line-height: 1.5;
 
       > label {
-        @apply mr-2 flex-none select-none;
+        @apply flex-none select-none;
+        padding-right: 0.5em;
+        padding-top: 0.25em;
+        display: flex;
+        align-items: flex-start;
       }
 
       > div {
         @apply flex-auto;
+        min-width: 0;
+
+        p {
+          padding-left: 0;
+          line-height: 1.5;
+        }
       }
     }
 
     input[type='checkbox'] {
       @apply cursor-pointer;
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
     }
 
     ul[data-type='taskList'] {
-      @apply m-0;
+      padding-left: 1.25em;
+      padding-top: 0.25em;
     }
   }
 }
 
 .bubble-menu {
-  @apply bg-popover border-border flex gap-1 rounded-lg border p-0.5 shadow-sm;
+  @apply bg-popover border-border flex rounded-lg border shadow-sm;
+  gap: 0.25em;
+  padding: 0.25em;
 
   button {
-    @apply rounded-lg bg-transparent p-1;
+    @apply rounded-lg bg-transparent;
+    padding: 0.5em;
 
     &:hover {
       @apply bg-muted rounded-md;
@@ -125,8 +178,8 @@
 }
 
 ::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
+  width: 0.1875rem;
+  height: 0.1875rem;
 }
 
 ::-webkit-scrollbar-track {
@@ -135,7 +188,7 @@
 
 ::-webkit-scrollbar-thumb {
   background-color: rgb(182, 182, 182);
-  border-radius: 20px;
+  border-radius: 1.25rem;
   border: transparent;
 }
 
