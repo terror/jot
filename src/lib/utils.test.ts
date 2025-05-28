@@ -23,8 +23,9 @@ describe('date handling', () => {
     it('should return correct filename for today', () => {
       const mockDate = new Date('2025-01-15T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(getTodayFilename()).toBe('01-15-25.md');
     });
@@ -32,8 +33,9 @@ describe('date handling', () => {
     it('should handle single digit months and days correctly', () => {
       const mockDate = new Date('2025-03-05T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(getTodayFilename()).toBe('03-05-25.md');
     });
@@ -41,8 +43,9 @@ describe('date handling', () => {
     it('should handle double digit months and days correctly', () => {
       const mockDate = new Date('2025-12-25T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(getTodayFilename()).toBe('12-25-25.md');
     });
@@ -50,8 +53,9 @@ describe('date handling', () => {
     it('should handle year transition correctly', () => {
       const mockDate = new Date('2030-01-01T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(getTodayFilename()).toBe('01-01-30.md');
     });
@@ -59,8 +63,9 @@ describe('date handling', () => {
     it('should handle leap year correctly', () => {
       const mockDate = new Date('2024-02-29T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(getTodayFilename()).toBe('02-29-24.md');
     });
@@ -216,8 +221,9 @@ describe('date handling', () => {
     it("should return true for today's filename", () => {
       const mockDate = new Date('2025-01-15T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(isToday('01-15-25.md')).toBe(true);
     });
@@ -225,8 +231,9 @@ describe('date handling', () => {
     it("should return false for yesterday's filename", () => {
       const mockDate = new Date('2025-01-15T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(isToday('01-14-25.md')).toBe(false);
     });
@@ -234,8 +241,9 @@ describe('date handling', () => {
     it("should return false for tomorrow's filename", () => {
       const mockDate = new Date('2025-01-15T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(isToday('01-16-25.md')).toBe(false);
     });
@@ -243,8 +251,9 @@ describe('date handling', () => {
     it('should return false for different year', () => {
       const mockDate = new Date('2025-01-15T10:00:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(isToday('01-15-24.md')).toBe(false);
     });
@@ -252,8 +261,9 @@ describe('date handling', () => {
     it('should handle edge cases around midnight', () => {
       const mockDate = new Date('2025-01-15T23:59:59Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(isToday('01-15-25.md')).toBe(true);
     });
@@ -261,8 +271,9 @@ describe('date handling', () => {
     it('should be consistent with getTodayFilename', () => {
       const mockDate = new Date('2025-07-04T15:30:00Z');
 
-      global.Date = jest.fn(() => mockDate) as any;
-      global.Date.now = jest.fn(() => mockDate.getTime());
+      const MockDate = jest.fn(() => mockDate) as jest.Mock & DateConstructor;
+      MockDate.now = jest.fn(() => mockDate.getTime());
+      global.Date = MockDate;
 
       expect(isToday(getTodayFilename())).toBe(true);
     });
