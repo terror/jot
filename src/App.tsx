@@ -3,11 +3,12 @@ import Editor from '@/components/editor';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { Time } from '@/components/time';
 import type { Position, Statistics } from '@/lib/types';
-import { useTheme } from '@/providers/theme-provider';
 import { useState } from 'react';
+import { useSettings } from './providers/settings-provider';
+import { isDarkMode } from './lib/utils';
 
 const App = () => {
-  const { theme } = useTheme();
+  const { settings } = useSettings();
 
   const [cursorPosition, setCursorPosition] = useState<Position>({
     line: 1,
@@ -29,7 +30,7 @@ const App = () => {
       </div>
 
       <div
-        className={`border-border border-t text-xs ${theme === 'dark' ? 'bg-zinc-900 text-zinc-400' : 'bg-zinc-800 text-zinc-300'}`}
+        className={`border-border border-t text-xs ${isDarkMode(settings.theme) ? 'bg-zinc-900 text-zinc-400' : 'bg-zinc-800 text-zinc-300'}`}
       >
         <div className='flex justify-between p-2'>
           <div className='flex gap-2'>

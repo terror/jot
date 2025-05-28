@@ -12,6 +12,9 @@ default:
 dev:
   bun run tauri dev
 
+dev-deps:
+  cargo install typeshare
+
 [group: 'format']
 fmt:
   prettier --write .
@@ -19,6 +22,9 @@ fmt:
 [group: 'format']
 fmt-check:
   bun run fmt-check
+
+gen-types:
+  typeshare -l typescript -o src/lib/typeshare.ts src-tauri
 
 [group: 'check']
 lint:

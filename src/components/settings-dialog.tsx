@@ -13,16 +13,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Theme } from '@/lib/typeshare';
 import { displayError, getLastPathSegment } from '@/lib/utils';
 import { useSettings } from '@/providers/settings-provider';
-import { useTheme } from '@/providers/theme-provider';
 import { open } from '@tauri-apps/api/dialog';
-import { Folder, Moon, Settings, Sun } from 'lucide-react';
+import { Folder, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 export const SettingsDialog = () => {
-  const { theme, setTheme } = useTheme();
   const { settings, updateSettings } = useSettings();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -44,8 +43,6 @@ export const SettingsDialog = () => {
     'Times New Roman',
     'Verdana',
   ]);
-
-  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
   const chooseDirectory = async () => {
     try {
@@ -107,8 +104,8 @@ export const SettingsDialog = () => {
             <div className='flex items-center justify-between'>
               <span className='text-muted-foreground'>Font Size</span>
               <Select
-                value={settings.fontSize}
-                onValueChange={(value) => updateSettings({ fontSize: value })}
+                value={settings.fontSize.toString()}
+                onValueChange={(value) => updateSettings({ fontSize: parseInt(value) })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder='Size' />
@@ -145,28 +142,25 @@ export const SettingsDialog = () => {
             </div>
 
             {/* Theme Setting */}
-            <div className='flex items-center justify-between'>
-              <span className='text-muted-foreground'>Theme</span>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={toggleTheme}
-                className='flex items-center gap-2'
-              >
-                {theme === 'dark' ? (
-                  <>
-                    <Sun className='h-4 w-4' />
-                    <span>Light</span>
-                  </>
-                ) : (
-                  <>
-                    <Moon className='h-4 w-4' />
-                    <span>Dark</span>
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
+<div className="flex items-center justify-between">
+  <span className="text-muted-foreground">Theme</span>
+  <Select
+    value={settings.theme}
+    onValueChange={(value: Theme) => updateSettings({ theme: value })}
+  >
+    <SelectTrigger>
+      <SelectValue placeholder="Select theme" />
+    </SelectTrigger>
+    <SelectContent>
+      {Object.values(Theme).map((themeValue) => (
+        <SelectItem key={themeValue} value={themeValue}>
+          {themeValue.charAt(0).toUpperCase() + themeValue.slice(1)}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
+</div>
         </DialogContent>
       </Dialog>
     </>
