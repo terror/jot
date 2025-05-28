@@ -8,14 +8,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Utility function to display error messages in toast notifications
- *
- * @param error - The error to display
- * @param fallbackMessage - Optional fallback message when error is not an Error instance
- * @param toast - The toast instance
- * @returns {void}
- */
 export const displayError = (
   error: unknown,
   fallbackMessage = 'An unknown error occurred'
@@ -29,19 +21,23 @@ export const displayError = (
   }
 };
 
-/**
- * Extracts the last segment from a string path.
- *
- * @param path - The path string to process
- * @param separator - The separator character (defaults to '/')
- * @returns {string} The last segment of the path
- *
- * @example
- * getLastPathSegment('/users/profiles/123') // returns '123'
- * getLastPathSegment('users/profiles/123') // returns '123'
- * getLastPathSegment('C:\\Users\\Documents', '\\') // returns 'Documents'
- * getLastPathSegment('/users/profiles/') // returns '' (empty string for trailing separator)
- */
+export const formatFilenameDate = (
+  filename: string,
+  options: Intl.DateTimeFormatOptions = {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }
+): string => parseFilenameToDate(filename).toLocaleDateString('en-US', options);
+
+export const getDateFilename = (date: Date): string => {
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const year = date.getFullYear().toString().slice(-2);
+  return `${month}-${day}-${year}.md`;
+};
+
 export const getLastPathSegment = (
   path: string,
   separator: string = '/'
@@ -61,20 +57,14 @@ export const getLastPathSegment = (
   return trimmedPath.substring(lastSeparatorIndex + 1);
 };
 
-/**
- * Determines whether dark mode is active, based on the given theme setting.
- *
- * - When `theme` is `Theme.Dark`, always returns `true`.
- * - When `theme` is `Theme.Light`, always returns `false`.
- * - When `theme` is `Theme.System`, queries the OS/browser preference
- *   (`prefers-color-scheme: dark`) and returns its current match.
- *
- * In a server-side or non-browser environment (where `window.matchMedia`
- * is unavailable), `Theme.System` will fall back to `false`.
- *
- * @param theme - The current application theme setting.
- * @returns `true` if dark mode should be applied, otherwise `false`.
- */
+export const getTodayFilename = (): string => {
+  const today = new Date();
+  const month = (today.getMonth() + 1).toString().padStart(2, '0');
+  const day = today.getDate().toString().padStart(2, '0');
+  const year = today.getFullYear().toString().slice(-2);
+  return `${month}-${day}-${year}.md`;
+};
+
 export function isDarkMode(theme: Theme): boolean {
   switch (theme) {
     case Theme.Dark:
@@ -90,3 +80,13 @@ export function isDarkMode(theme: Theme): boolean {
       return false;
   }
 }
+
+export const isToday = (filename: string): boolean =>
+  filename === getTodayFilename();
+
+export const parseFilenameToDate = (filename: string): Date => {
+  const dateStr = filename.replace('.md', '');
+  const [month, day, year] = dateStr.split('-');
+  const fullYear = 2000 + parseInt(year);
+  return new Date(fullYear, parseInt(month) - 1, parseInt(day));
+};

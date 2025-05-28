@@ -122,27 +122,6 @@ export const SettingsDialog = () => {
               </Select>
             </div>
 
-            {/* Directory Chooser */}
-            <div className='space-y-2'>
-              <div className='flex items-center justify-between'>
-                <span className='text-muted-foreground'>Folder</span>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={chooseDirectory}
-                  title={settings.directory || 'Choose a directory'}
-                  className='flex cursor-pointer items-center gap-2'
-                >
-                  <Folder className='h-4 w-4' />
-                  <span className='max-w-[150px] truncate'>
-                    {settings.directory
-                      ? getLastPathSegment(settings.directory)
-                      : 'Choose'}
-                  </span>
-                </Button>
-              </div>
-            </div>
-
             {/* Theme Setting */}
             <div className='flex items-center justify-between'>
               <span className='text-muted-foreground'>Theme</span>
@@ -163,6 +142,27 @@ export const SettingsDialog = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Directory Chooser */}
+            <div className='space-y-2'>
+              <div className='flex items-center justify-between'>
+                <span className='text-muted-foreground'>Vault</span>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={chooseDirectory}
+                  title={settings.directory || 'Choose a directory'}
+                  className='flex cursor-pointer items-center gap-2'
+                >
+                  <Folder className='h-4 w-4' />
+                  <span className='max-w-[150px] truncate'>
+                    {settings.directory
+                      ? getLastPathSegment(settings.directory)
+                      : 'Choose'}
+                  </span>
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>

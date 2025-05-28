@@ -1,6 +1,8 @@
 import { Position } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, getTodayFilename } from '@/lib/utils';
+import { useEntryNavigation } from '@/providers/entry-navigation-provider';
 import { useSettings } from '@/providers/settings-provider';
+import { useVault } from '@/providers/vault-provider';
 import { Mathematics } from '@tiptap-pro/extension-mathematics';
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
@@ -30,7 +32,7 @@ import {
 import { BubbleMenu } from '@tiptap/react';
 import 'katex/dist/katex.min.css';
 import { BoldIcon, ItalicIcon, StrikethroughIcon } from 'lucide-react';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 interface EditorProps {
   onCursorPositionChange: (position: Position) => void;
@@ -42,11 +44,29 @@ const Editor: React.FC<EditorProps> = ({
   onStatisticsChange,
 }) => {
   const { settings } = useSettings();
+  const { vault, updateEntry } = useVault();
+  const { currentEntry } = useEntryNavigation();
 
   const editorContainerRef = useRef(null);
 
+  const todayFilename = useMemo(() => getTodayFilename(), []);
+
+  const activeEntry = useMemo(() => {
+    if (currentEntry) {
+      const vaultEntry = vault.entries.find(
+        (e) => e.filename === currentEntry.filename
+      );
+
+      return vaultEntry || currentEntry;
+    }
+
+    const todayEntry = vault.entries.find((e) => e.filename === todayFilename);
+
+    return todayEntry || { filename: todayFilename, content: '' };
+  }, [currentEntry, vault.entries, todayFilename]);
+
   const editor = useEditor({
-    shouldRerenderOnTransaction: true,
+    shouldRerenderOnTransaction: false,
     extensions: [
       Blockquote,
       Bold,
@@ -70,6 +90,7 @@ const Editor: React.FC<EditorProps> = ({
       TaskList,
       Text,
     ],
+    content: activeEntry.content,
     autofocus: true,
     editorProps: {
       attributes: {
@@ -77,14 +98,49 @@ const Editor: React.FC<EditorProps> = ({
         style: `font-family: ${settings.font}; font-size: ${settings.fontSize}px`,
       },
     },
+    onCreate: ({ editor }) => {
+      updateCursorPosition(editor);
+      updateStatistics(editor);
+    },
     onUpdate: ({ editor }) => {
       updateCursorPosition(editor);
       updateStatistics(editor);
+
+      const content = editor.getHTML();
+
+      if (content !== activeEntry.content) {
+        saveContent(content);
+      }
     },
     onSelectionUpdate: ({ editor }) => {
       updateCursorPosition(editor);
     },
   });
+
+  useEffect(() => {
+    if (editor && editor.getHTML() !== activeEntry.content) {
+      editor.commands.setContent(activeEntry.content, false);
+
+      setTimeout(() => {
+        updateStatistics(editor);
+      }, 0);
+    }
+  }, [activeEntry.content, editor]);
+
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const saveContent = (content: string) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      updateEntry({
+        filename: activeEntry.filename,
+        content: content,
+      });
+    }, 2500);
+  };
 
   const updateCursorPosition = (editor: TiptapEditor | null) => {
     if (!editor) return;

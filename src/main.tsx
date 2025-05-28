@@ -4,13 +4,19 @@ import ReactDOM from 'react-dom/client';
 
 import App from './App';
 import './index.css';
+import { EntryNavigationProvider } from './providers/entry-navigation-provider';
 import { SettingsProvider } from './providers/settings-provider';
+import { VaultProvider } from './providers/vault-provider';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <SettingsProvider>
-      <App />
-      <Toaster richColors />
+      <VaultProvider>
+        <EntryNavigationProvider>
+          <App />
+          <Toaster richColors />
+        </EntryNavigationProvider>
+      </VaultProvider>
     </SettingsProvider>
   </React.StrictMode>
 );

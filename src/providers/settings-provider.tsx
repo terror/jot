@@ -33,8 +33,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     invoke<Settings>('read_settings')
-      .then((loaded) => {
-        setSettings(loaded);
+      .then((settings) => {
+        setSettings(settings);
       })
       .catch((error) => console.error(error));
   }, []);
@@ -55,6 +55,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         : 'light';
 
       root.classList.add(systemTheme);
+
       return;
     }
 
@@ -63,13 +64,17 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   const updateSettings = (newSettings: Partial<Settings>) => {
     setSettings((prev) => {
-      const updated = { ...prev, ...newSettings } as Settings;
+      if (!prev) {
+        return;
+      }
 
-      invoke('write_settings', { settings: updated }).catch((error) =>
+      const settings = { ...prev, ...newSettings };
+
+      invoke('write_settings', { settings }).catch((error) =>
         displayError(error)
       );
 
-      return updated;
+      return settings;
     });
   };
 

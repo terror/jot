@@ -18,3 +18,14 @@ export interface Settings {
   /** The theme of the application. */
   theme: Theme;
 }
+
+export interface VaultEntry {
+  /** The filename on disk, formatted as `MM-DD-YY.md`. */
+  filename: string;
+  /** The content of the file. */
+  content: string;
+}
+
+export interface Vault {
+  entries: VaultEntry[];
+}
