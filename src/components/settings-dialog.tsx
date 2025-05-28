@@ -105,7 +105,9 @@ export const SettingsDialog = () => {
               <span className='text-muted-foreground'>Font Size</span>
               <Select
                 value={settings.fontSize.toString()}
-                onValueChange={(value) => updateSettings({ fontSize: parseInt(value) })}
+                onValueChange={(value) =>
+                  updateSettings({ fontSize: parseInt(value) })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder='Size' />
@@ -142,25 +144,27 @@ export const SettingsDialog = () => {
             </div>
 
             {/* Theme Setting */}
-<div className="flex items-center justify-between">
-  <span className="text-muted-foreground">Theme</span>
-  <Select
-    value={settings.theme}
-    onValueChange={(value: Theme) => updateSettings({ theme: value })}
-  >
-    <SelectTrigger>
-      <SelectValue placeholder="Select theme" />
-    </SelectTrigger>
-    <SelectContent>
-      {Object.values(Theme).map((themeValue) => (
-        <SelectItem key={themeValue} value={themeValue}>
-          {themeValue.charAt(0).toUpperCase() + themeValue.slice(1)}
-        </SelectItem>
-      ))}
-    </SelectContent>
-  </Select>
-</div>
-</div>
+            <div className='flex items-center justify-between'>
+              <span className='text-muted-foreground'>Theme</span>
+              <Select
+                value={settings.theme}
+                onValueChange={(value: Theme) =>
+                  updateSettings({ theme: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder='Select theme' />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(Theme).map((themeValue) => (
+                    <SelectItem key={themeValue} value={themeValue}>
+                      {themeValue.charAt(0).toUpperCase() + themeValue.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </>

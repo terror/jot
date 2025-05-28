@@ -4,8 +4,9 @@ import { SettingsDialog } from '@/components/settings-dialog';
 import { Time } from '@/components/time';
 import type { Position, Statistics } from '@/lib/types';
 import { useState } from 'react';
-import { useSettings } from './providers/settings-provider';
+
 import { isDarkMode } from './lib/utils';
+import { useSettings } from './providers/settings-provider';
 
 const App = () => {
   const { settings } = useSettings();

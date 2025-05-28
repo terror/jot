@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
+
 import { Theme } from './typeshare';
 
 export function cn(...inputs: ClassValue[]) {

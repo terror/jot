@@ -8,9 +8,9 @@ import { SettingsProvider } from './providers/settings-provider';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-      <SettingsProvider>
-        <App />
-        <Toaster richColors />
-      </SettingsProvider>
+    <SettingsProvider>
+      <App />
+      <Toaster richColors />
+    </SettingsProvider>
   </React.StrictMode>
 );
