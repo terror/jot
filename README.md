@@ -10,6 +10,21 @@ I'm writing this to encourage myself to do more daily note-taking, while also
 having a custom app I can easily extend and integrate with whatever services I
 want.
 
+## Installation
+
+As of now, the only way to get **jot** on your system, is to build from source:
+
+```bash
+git clone https://github.com/terror/jot
+bun install
+bun tauri build --bundles <target>
+```
+
+The app should be available to use in `src-tauri/target/release/bundle`.
+
+**n.b.** You'll need a `TIPTAP_PRO_TOKEN` set in the environment in order to
+install the `@tiptap-pro/extension-mathematics` package.
+
 ## Development
 
 I'm using [Tauri](https://tauri.app/) to build this desktop app,
