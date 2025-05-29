@@ -38,7 +38,7 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Install Bun
+      - name: Install bun
         uses: oven-sh/setup-bun@v1
 
       - name: Install frontend dependencies
@@ -52,5 +52,6 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: 'jot v__VERSION__'
           releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
+          args: --bundles app,dmg
