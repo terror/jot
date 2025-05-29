@@ -4,7 +4,7 @@
 
 **jot** is a developer-focused daily note-taking application.
 
-<img width="912" alt="Screenshot 2025-04-09 at 12 42 55 PM" src="https://github.com/user-attachments/assets/86df3d82-71bf-4cb4-85a9-7835d92719bb" />
+<img width="912" alt="Screenshot 2025-05-28 at 11 12 05 PM" src="https://github.com/user-attachments/assets/417d5fbb-7625-4396-8d2b-ff048e849a35" />
 
 I'm writing this to encourage myself to do more daily note-taking, while also
 having a custom app I can easily extend and integrate with whatever services I

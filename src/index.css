@@ -115,7 +115,7 @@
 
   ul[data-type='taskList'] {
     @apply list-none;
-    padding-left: 0.25em;
+    padding-left: 0.5em;
 
     li {
       @apply flex items-start;
