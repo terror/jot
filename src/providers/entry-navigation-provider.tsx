@@ -15,11 +15,13 @@ const EntryNavigationContext = createContext<
 
 export const useEntryNavigation = () => {
   const context = useContext(EntryNavigationContext);
+
   if (context === undefined) {
     throw new Error(
       'useEntryNavigation must be used within an EntryNavigationProvider'
     );
   }
+
   return context;
 };
 

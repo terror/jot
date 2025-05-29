@@ -39,7 +39,7 @@ export const VaultProvider = ({ children }: { children: ReactNode }) => {
         setVault(vault);
       })
       .catch((error) => console.error(error));
-  }, []);
+  }, [settings]);
 
   const updateEntry = (entry: VaultEntry) => {
     setVault((prev) => {

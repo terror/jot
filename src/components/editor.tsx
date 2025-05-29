@@ -15,6 +15,7 @@ import Gapcursor from '@tiptap/extension-gapcursor';
 import Heading from '@tiptap/extension-heading';
 import Highlight from '@tiptap/extension-highlight';
 import History from '@tiptap/extension-history';
+import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Italic from '@tiptap/extension-italic';
 import ListItem from '@tiptap/extension-list-item';
 import ListKeymap from '@tiptap/extension-list-keymap';
@@ -33,6 +34,17 @@ import { BubbleMenu } from '@tiptap/react';
 import 'katex/dist/katex.min.css';
 import { BoldIcon, ItalicIcon, StrikethroughIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef } from 'react';
+
+const CustomHorizontalRule = HorizontalRule.extend({
+  addKeyboardShortcuts() {
+    return {
+      'Mod-Enter': () => {
+        this.editor.commands.setHorizontalRule();
+        return true;
+      },
+    };
+  },
+});
 
 interface EditorProps {
   onCursorPositionChange: (position: Position) => void;
@@ -71,9 +83,9 @@ const Editor: React.FC<EditorProps> = ({
       Blockquote,
       Bold,
       BulletList,
-      Mathematics,
       CharacterCount.configure(),
       Code,
+      CustomHorizontalRule,
       Document,
       Dropcursor,
       Gapcursor,
@@ -83,6 +95,7 @@ const Editor: React.FC<EditorProps> = ({
       Italic,
       ListItem,
       ListKeymap,
+      Mathematics,
       OrderedList,
       Paragraph,
       Strike,

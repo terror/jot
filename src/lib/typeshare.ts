@@ -27,5 +27,6 @@ export interface VaultEntry {
 }
 
 export interface Vault {
+  /** The list of entries in the vault. */
   entries: VaultEntry[];
 }

@@ -12,6 +12,7 @@ pub(crate) struct VaultEntry {
 #[derive(Debug, Deserialize, Serialize)]
 #[typeshare]
 pub(crate) struct Vault {
+  /// The list of entries in the vault.
   entries: Vec<VaultEntry>,
 }
 
@@ -23,7 +24,7 @@ pub(crate) fn load_vault(settings: Settings) -> Result<Vault> {
     fs::create_dir_all(vault_dir)?;
   }
 
-  let date_pattern = Regex::new(r"^(\d{2}-\d{2}-\d{2})\.md$").unwrap();
+  let pattern = Regex::new(r"^(\d{2}-\d{2}-\d{2})\.md$").unwrap();
 
   let mut entries = Vec::new();
 
@@ -32,17 +33,13 @@ pub(crate) fn load_vault(settings: Settings) -> Result<Vault> {
 
     let filename = entry.file_name().to_string_lossy().to_string();
 
-    if date_pattern.is_match(&filename) {
-      if entry.file_type()?.is_file() {
-        entries.push(VaultEntry {
-          filename,
-          content: fs::read_to_string(entry.path())?,
-        });
-      }
+    if pattern.is_match(&filename) && entry.file_type()?.is_file() {
+      entries.push(VaultEntry {
+        filename,
+        content: fs::read_to_string(entry.path())?,
+      });
     }
   }
-
-  entries.sort_by(|a, b| a.filename.cmp(&b.filename));
 
   Ok(Vault { entries })
 }
