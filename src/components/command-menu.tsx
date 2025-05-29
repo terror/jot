@@ -8,17 +8,14 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { VaultEntry } from '@/lib/typeshare';
-import { formatFilenameDate, isToday } from '@/lib/utils';
 import { useEntryNavigation } from '@/providers/entry-navigation-provider';
-import { useVault } from '@/providers/vault-provider';
-import { Calendar, ClipboardCopy, Home } from 'lucide-react';
+import { Calendar, Home } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export const CommandMenu = () => {
   const [open, setOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  const { vault } = useVault();
   const { setCurrentEntry, goToToday } = useEntryNavigation();
 
   useEffect(() => {
@@ -53,46 +50,17 @@ export const CommandMenu = () => {
     <>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder='Search entries or commands...' />
-        <CommandList>
+        <CommandList className='py-1'>
           <CommandEmpty>No results found.</CommandEmpty>
 
-          <CommandGroup heading='Navigation'>
+          <CommandGroup heading='Actions'>
             <CommandItem onSelect={handleGoToToday}>
               <Home className='h-4 w-4' />
               <span>Today</span>
             </CommandItem>
             <CommandItem onSelect={handleCalendarOpen}>
               <Calendar className='h-4 w-4' />
-              <span>Open Calendar</span>
-            </CommandItem>
-          </CommandGroup>
-
-          <CommandGroup heading='Recent'>
-            {vault.entries
-              .slice()
-              .reverse()
-              .slice(0, 5)
-              .map((entry) => (
-                <CommandItem
-                  key={entry.filename}
-                  onSelect={() => handleEntrySelect(entry)}
-                  className={isToday(entry.filename) ? 'bg-accent/50' : ''}
-                >
-                  <Calendar className='h-4 w-4' />
-                  <div className='flex flex-col'>
-                    <span className='font-medium'>
-                      {formatFilenameDate(entry.filename)}
-                      {isToday(entry.filename) && ' (Today)'}
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
-          </CommandGroup>
-
-          <CommandGroup heading='Actions'>
-            <CommandItem>
-              <ClipboardCopy />
-              <span>Copy current entry</span>
+              <span>Calendar</span>
             </CommandItem>
           </CommandGroup>
         </CommandList>

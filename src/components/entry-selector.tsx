@@ -55,13 +55,13 @@ export const EntrySelector = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-fit'>
+      <DialogContent className='w-80 max-w-none [&>button]:hidden'>
         <div className='flex flex-col items-center space-y-4'>
           <Calendar
             mode='single'
             onSelect={handleDateSelect}
             disabled={isDateDisabled}
-            className='rounded-md border'
+            className='rounded-md'
             initialFocus
           />
         </div>
