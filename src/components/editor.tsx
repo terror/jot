@@ -8,6 +8,7 @@ import { useVault } from '@/providers/vault-provider';
 import { Mathematics } from '@tiptap-pro/extension-mathematics';
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
+import Underline from '@tiptap/extension-underline'
 import BulletList from '@tiptap/extension-bullet-list';
 import CharacterCount from '@tiptap/extension-character-count';
 import Code from '@tiptap/extension-code';
@@ -35,7 +36,7 @@ import {
 } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
 import 'katex/dist/katex.min.css';
-import { BoldIcon, ItalicIcon, StrikethroughIcon } from 'lucide-react';
+import { BoldIcon, ItalicIcon, StrikethroughIcon, UnderlineIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 const CustomHorizontalRule = HorizontalRule.extend({
@@ -109,6 +110,7 @@ const Editor: React.FC<EditorProps> = ({
       TaskItem,
       TaskList,
       Text,
+      Underline,
     ],
     content: activeEntry.content,
     autofocus: true,
@@ -243,6 +245,16 @@ const Editor: React.FC<EditorProps> = ({
             title='Strikethrough'
           >
             <StrikethroughIcon className='h-4 w-4' />
+          </button>
+          <button
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            className={cn(
+              editor.isActive('underline') ? 'is-active' : '',
+              'cursor-pointer'
+            )}
+            title='Underline'
+          >
+            <UnderlineIcon className='h-4 w-4' />
           </button>
         </div>
       </BubbleMenu>
