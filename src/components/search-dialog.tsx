@@ -90,13 +90,13 @@ export const SearchDialog = ({
           <div className='flex items-center gap-2'>
             <div className='flex-1'>
               <Input
-                placeholder='Search...'
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
                 autoComplete='off'
                 autoCorrect='off'
-                onKeyDown={handleKeyDown}
                 autoFocus
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder='Search...'
+                value={searchTerm}
               />
             </div>
             <div className='flex items-center gap-1'>
@@ -135,10 +135,12 @@ export const SearchDialog = ({
             <div className='space-y-3 border-t pt-4'>
               <div className='flex items-center gap-2'>
                 <Input
-                  placeholder='Replace with...'
-                  value={replaceTerm}
+                  autoComplete='off'
+                  autoCorrect='off'
                   onChange={(e) => setReplaceTerm(e.target.value)}
                   onKeyDown={handleKeyDown}
+                  placeholder='Replace with...'
+                  value={replaceTerm}
                 />
               </div>
               <div className='flex items-center gap-2'>
