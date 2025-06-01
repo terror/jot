@@ -1,3 +1,5 @@
+import { SearchDialog } from '@/components/search-dialog';
+import { Search } from '@/extensions/search';
 import { Position } from '@/lib/types';
 import { cn, getTodayFilename } from '@/lib/utils';
 import { useEntryNavigation } from '@/providers/entry-navigation-provider';
@@ -17,6 +19,7 @@ import Highlight from '@tiptap/extension-highlight';
 import History from '@tiptap/extension-history';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Italic from '@tiptap/extension-italic';
+import Link from '@tiptap/extension-link';
 import ListItem from '@tiptap/extension-list-item';
 import ListKeymap from '@tiptap/extension-list-keymap';
 import OrderedList from '@tiptap/extension-ordered-list';
@@ -33,7 +36,7 @@ import {
 import { BubbleMenu } from '@tiptap/react';
 import 'katex/dist/katex.min.css';
 import { BoldIcon, ItalicIcon, StrikethroughIcon } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 const CustomHorizontalRule = HorizontalRule.extend({
   addKeyboardShortcuts() {
@@ -55,6 +58,8 @@ const Editor: React.FC<EditorProps> = ({
   onCursorPositionChange,
   onStatisticsChange,
 }) => {
+  const [searchOpen, setSearchOpen] = useState(false);
+
   const { settings } = useSettings();
   const { vault, updateEntry } = useVault();
   const { currentEntry } = useEntryNavigation();
@@ -93,11 +98,13 @@ const Editor: React.FC<EditorProps> = ({
       Highlight.configure({ multicolor: true }),
       History,
       Italic,
+      Link.configure(),
       ListItem,
       ListKeymap,
       Mathematics,
       OrderedList,
       Paragraph,
+      Search.configure(),
       Strike,
       TaskItem,
       TaskList,
@@ -139,6 +146,28 @@ const Editor: React.FC<EditorProps> = ({
       }, 0);
     }
   }, [activeEntry.content, editor]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+
+      if ((e.metaKey || e.ctrlKey) && e.key === 'h') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+
+      if (e.key === 'Escape' && searchOpen) {
+        setSearchOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [searchOpen]);
 
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -217,6 +246,13 @@ const Editor: React.FC<EditorProps> = ({
           </button>
         </div>
       </BubbleMenu>
+
+      {/* Search Dialog */}
+      <SearchDialog
+        editor={editor}
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+      />
 
       <EditorContent
         autoCorrect='off'
