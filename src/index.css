@@ -166,7 +166,7 @@
 
   button {
     @apply rounded-lg bg-transparent;
-    padding: 0.5em;
+    padding: 0.25em;
 
     &:hover {
       @apply bg-muted rounded-md;

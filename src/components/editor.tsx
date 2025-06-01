@@ -8,7 +8,6 @@ import { useVault } from '@/providers/vault-provider';
 import { Mathematics } from '@tiptap-pro/extension-mathematics';
 import Blockquote from '@tiptap/extension-blockquote';
 import Bold from '@tiptap/extension-bold';
-import Underline from '@tiptap/extension-underline'
 import BulletList from '@tiptap/extension-bullet-list';
 import CharacterCount from '@tiptap/extension-character-count';
 import Code from '@tiptap/extension-code';
@@ -29,6 +28,7 @@ import Strike from '@tiptap/extension-strike';
 import TaskItem from '@tiptap/extension-task-item';
 import TaskList from '@tiptap/extension-task-list';
 import Text from '@tiptap/extension-text';
+import Underline from '@tiptap/extension-underline';
 import {
   EditorContent,
   Editor as TiptapEditor,
@@ -36,7 +36,12 @@ import {
 } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react';
 import 'katex/dist/katex.min.css';
-import { BoldIcon, ItalicIcon, StrikethroughIcon, UnderlineIcon } from 'lucide-react';
+import {
+  BoldIcon,
+  ItalicIcon,
+  StrikethroughIcon,
+  UnderlineIcon,
+} from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 const CustomHorizontalRule = HorizontalRule.extend({
