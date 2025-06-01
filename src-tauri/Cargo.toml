@@ -1,24 +1,24 @@
 [package]
 name = "jot"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.0.0"
+description = "A developer-focused note taking app"
+authors = ["Liam liam@scalzulli.com"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+publish = false
 
 [build-dependencies]
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "dialog-all", "shell-open"] }
+regex = "1.11.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tauri = { version = "1", features = [ "dialog-all", "shell-open"] }
 thiserror = "2.0.12"
 typeshare = "1.0.4"
-regex = "1.11.1"
-chrono = "0.4.41"
+
+[dev-dependencies]
+tempdir = "0.3"
 
 [features]
-# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]

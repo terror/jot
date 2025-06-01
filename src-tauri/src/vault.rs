@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[typeshare]
 pub(crate) struct VaultEntry {
   /// The filename on disk, formatted as `MM-DD-YY.md`.
@@ -16,46 +16,114 @@ pub(crate) struct Vault {
   entries: Vec<VaultEntry>,
 }
 
-#[tauri::command]
-pub(crate) fn load_vault(settings: Settings) -> Result<Vault> {
-  let vault_dir = std::path::Path::new(&settings.directory);
-
-  if !vault_dir.exists() {
-    fs::create_dir_all(vault_dir)?;
-  }
-
-  let pattern = Regex::new(r"^(\d{2}-\d{2}-\d{2})\.md$").unwrap();
-
-  let mut entries = Vec::new();
-
-  for entry in fs::read_dir(vault_dir)? {
-    let entry = entry?;
-
-    let filename = entry.file_name().to_string_lossy().to_string();
-
-    if pattern.is_match(&filename) && entry.file_type()?.is_file() {
-      entries.push(VaultEntry {
-        filename,
-        content: fs::read_to_string(entry.path())?,
-      });
+impl Vault {
+  pub(crate) fn load(directory: &Path) -> Result<Self> {
+    if !directory.exists() {
+      fs::create_dir_all(directory).map_err(Error::from)?;
     }
+
+    let pattern = Regex::new(r"^(\d{2}-\d{2}-\d{2})\.md$").unwrap();
+
+    let mut entries = Vec::new();
+
+    for entry in fs::read_dir(directory).map_err(Error::from)? {
+      let entry = entry.map_err(Error::from)?;
+
+      let path = entry.path();
+
+      let filename = path.file_name().unwrap().to_string_lossy().to_string();
+
+      if pattern.is_match(&filename) && path.is_file() {
+        entries.push(VaultEntry {
+          filename,
+          content: fs::read_to_string(path).map_err(Error::from)?,
+        });
+      }
+    }
+
+    Ok(Self { entries })
   }
 
-  Ok(Vault { entries })
+  pub(crate) fn write_entry(
+    directory: &Path,
+    entry: &VaultEntry,
+  ) -> Result<()> {
+    if !directory.exists() {
+      fs::create_dir_all(directory).map_err(Error::from)?;
+    }
+
+    fs::write(directory.join(&entry.filename), &entry.content)
+      .map_err(Error::from)
+  }
+
+  #[cfg(test)]
+  pub fn entries(&self) -> &[VaultEntry] {
+    &self.entries
+  }
 }
 
-#[tauri::command]
-pub(crate) fn write_vault_entry(
-  settings: Settings,
-  entry: VaultEntry,
-) -> Result {
-  let vault_dir = Path::new(&settings.directory);
+pub(crate) mod api {
+  use super::*;
 
-  if !vault_dir.exists() {
-    fs::create_dir_all(vault_dir)?;
+  #[tauri::command]
+  pub(crate) fn load_vault(settings: Settings) -> Result<Vault> {
+    Vault::load(&Path::new(&settings.directory))
   }
 
-  fs::write(vault_dir.join(&entry.filename), entry.content)?;
+  #[tauri::command]
+  pub(crate) fn write_vault_entry(
+    settings: Settings,
+    entry: VaultEntry,
+  ) -> Result {
+    Vault::write_entry(&Path::new(&settings.directory), &entry)
+  }
+}
 
-  Ok(())
+#[cfg(test)]
+mod tests {
+  use {super::*, tempdir::TempDir};
+
+  #[test]
+  fn load_vault() {
+    let temp_dir = TempDir::new("vault_test").unwrap();
+
+    fs::write(temp_dir.path().join("01-01-23.md"), "Test content 1").unwrap();
+    fs::write(temp_dir.path().join("02-01-23.md"), "Test content 2").unwrap();
+
+    fs::write(temp_dir.path().join("invalid.txt"), "Should not be loaded")
+      .unwrap();
+
+    let vault = Vault::load(temp_dir.path()).unwrap();
+
+    assert_eq!(
+      vault.entries(),
+      &[
+        VaultEntry {
+          filename: "01-01-23.md".to_string(),
+          content: "Test content 1".to_string(),
+        },
+        VaultEntry {
+          filename: "02-01-23.md".to_string(),
+          content: "Test content 2".to_string(),
+        },
+      ]
+    );
+  }
+
+  #[test]
+  fn write_entry() {
+    let temp_dir = TempDir::new("vault_test").unwrap();
+
+    let entry = VaultEntry {
+      filename: "01-01-23.md".to_string(),
+      content: "Test content".to_string(),
+    };
+
+    Vault::write_entry(temp_dir.path(), &entry).unwrap();
+
+    assert_eq!(
+      fs::read_to_string(temp_dir.path().join("01-01-23.md")).unwrap(),
+      "Test content"
+    );
+  }
 }

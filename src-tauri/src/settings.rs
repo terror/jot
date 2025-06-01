@@ -2,7 +2,7 @@ use super::*;
 
 const SETTINGS_FILE_NAME: &str = "settings.json";
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 #[typeshare]
 pub(crate) enum Theme {
@@ -11,7 +11,7 @@ pub(crate) enum Theme {
   System,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 #[typeshare]
 pub(crate) struct Settings {
@@ -43,40 +43,44 @@ impl TryFrom<&AppHandle> for Settings {
   }
 }
 
-#[tauri::command]
-pub(crate) fn read_settings(app: AppHandle) -> Result<Settings> {
-  let config_dir = app
-    .path_resolver()
-    .app_config_dir()
-    .ok_or(Error::ResolvePath("tauri app config dir".into()))?;
+pub(crate) mod api {
+  use super::*;
 
-  if !config_dir.exists() {
-    fs::create_dir_all(&config_dir)?;
+  #[tauri::command]
+  pub(crate) fn read_settings(app: AppHandle) -> Result<Settings> {
+    let config_dir = app
+      .path_resolver()
+      .app_config_dir()
+      .ok_or(Error::ResolvePath("tauri app config dir".into()))?;
+
+    if !config_dir.exists() {
+      fs::create_dir_all(&config_dir)?;
+    }
+
+    let path = config_dir.join(SETTINGS_FILE_NAME);
+
+    if !path.exists() {
+      let default_settings = Settings::try_from(&app)?;
+      fs::write(path, serde_json::to_string(&default_settings)?)?;
+      return Ok(default_settings);
+    }
+
+    Ok(serde_json::from_str::<Settings>(&fs::read_to_string(
+      &path,
+    )?)?)
   }
 
-  let path = config_dir.join(SETTINGS_FILE_NAME);
+  #[tauri::command]
+  pub(crate) fn write_settings(app: AppHandle, settings: Settings) -> Result {
+    let config_dir = app
+      .path_resolver()
+      .app_config_dir()
+      .ok_or(Error::ResolvePath("tauri app config dir".into()))?;
 
-  if !path.exists() {
-    let default_settings = Settings::try_from(&app)?;
-    fs::write(path, serde_json::to_string(&default_settings)?)?;
-    return Ok(default_settings);
+    fs::write(
+      config_dir.join(SETTINGS_FILE_NAME),
+      serde_json::to_string(&settings)?,
+    )
+    .map_err(Error::Io)
   }
-
-  Ok(serde_json::from_str::<Settings>(&fs::read_to_string(
-    &path,
-  )?)?)
-}
-
-#[tauri::command]
-pub(crate) fn write_settings(app: AppHandle, settings: Settings) -> Result {
-  let config_dir = app
-    .path_resolver()
-    .app_config_dir()
-    .ok_or(Error::ResolvePath("tauri app config dir".into()))?;
-
-  fs::write(
-    config_dir.join(SETTINGS_FILE_NAME),
-    serde_json::to_string(&settings)?,
-  )
-  .map_err(Error::Io)
 }
