@@ -1,8 +1,5 @@
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Editor as TiptapEditor } from '@tiptap/react';
 import { ChevronDown, ChevronUp, Replace, X } from 'lucide-react';

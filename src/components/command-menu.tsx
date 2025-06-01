@@ -49,7 +49,7 @@ export const CommandMenu = () => {
   return (
     <>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder='Search entries or commands...' />
+        <CommandInput placeholder='Search commands...' />
         <CommandList className='py-1'>
           <CommandEmpty>No results found.</CommandEmpty>
 
