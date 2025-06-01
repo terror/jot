@@ -26,6 +26,12 @@ fmt-check:
 gen-types:
   typeshare -l typescript -o src/lib/typeshare.ts src-tauri
 
+install:
+  bun install
+  bun tauri build --bundles app
+  rm -rf /Applications/jot.app
+  mv src-tauri/target/release/bundle/macos/jot.app /Applications
+
 [group: 'check']
 lint:
   bun run lint
