@@ -1,7 +1,11 @@
 import { Calendar } from '@/components/ui/calendar';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { VaultEntry } from '@/lib/typeshare';
-import { getDateFilename, parseFilenameToDate } from '@/lib/utils';
+import {
+  getDateFilename,
+  getTodayFilename,
+  parseFilenameToDate,
+} from '@/lib/utils';
 import { useVault } from '@/providers/vault-provider';
 import { useMemo } from 'react';
 
@@ -17,6 +21,8 @@ export const EntrySelector = ({
   onOpenChange,
 }: EntrySelectorProps) => {
   const { vault } = useVault();
+
+  const todayFilename = useMemo(() => getTodayFilename(), []);
 
   const entryDates = useMemo(() => {
     const dates = new Set<string>();
@@ -38,18 +44,28 @@ export const EntrySelector = ({
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return;
 
-    const entry = getEntryForDate(date);
+    const entry = getEntryForDate(date) || {
+      filename: todayFilename,
+      content: '',
+    };
 
-    if (entry) {
-      onEntrySelect(entry);
-      onOpenChange(false);
-    }
+    onEntrySelect(entry);
+    onOpenChange(false);
   };
 
   const isDateDisabled = (date: Date): boolean => {
     const today = new Date();
+
     today.setHours(0, 0, 0, 0);
-    if (date > today) return true;
+
+    if (date.getTime() === today.getTime()) {
+      return false;
+    }
+
+    if (date > today) {
+      return true;
+    }
+
     return !entryDates.has(date.toDateString());
   };
 
