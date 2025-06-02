@@ -161,11 +161,6 @@ const Editor: React.FC<EditorProps> = ({
         setSearchOpen(true);
       }
 
-      if ((e.metaKey || e.ctrlKey) && e.key === 'h') {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-
       if (e.key === 'Escape' && searchOpen) {
         setSearchOpen(false);
       }
