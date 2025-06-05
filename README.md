@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/terror/jot/actions/workflows/ci.yaml/badge.svg)](https://github.com/terror/jot/actions/workflows/ci.yaml)
 
-**jot** is a developer-focused daily note-taking application.
+**jot** is a daily writing application.
 
 <img width="912" alt="Screenshot 2025-05-28 at 11 12 05 PM" src="https://github.com/user-attachments/assets/417d5fbb-7625-4396-8d2b-ff048e849a35" />
 
